@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Upload & Analyze | Mewar Campus IQ</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -15,7 +16,10 @@
     <aside class="sidebar">
         <a href="/" class="brand">
             <span class="brand-icon">🎓</span>
-            <span><strong>Mewar Campus IQ</strong><small>AI-Powered Study Companion</small></span>
+            <span>
+                <strong>Mewar Campus IQ</strong>
+                <small>AI-Powered Study Companion</small>
+            </span>
         </a>
 
         <nav class="navigation">
@@ -33,14 +37,26 @@
         <div class="sidebar-footer">
             <div class="campus-drawing">🏛️</div>
             <p>Smarter Learning<br>Brighter Future</p>
-            <div class="university"><span>🎓</span><div><strong>Mewar University</strong><small>Learn · Grow · Achieve</small></div></div>
+            <div class="university">
+                <span>🎓</span>
+                <div>
+                    <strong>Mewar University</strong>
+                    <small>Learn · Grow · Achieve</small>
+                </div>
+            </div>
         </div>
     </aside>
 
     <main class="main-content">
         <header class="topbar">
             <a href="/" class="back-link">← Home</a>
-            <div class="profile"><div class="avatar">S</div><div><strong>Student</strong><small>Mewar University</small></div></div>
+            <div class="profile">
+                <div class="avatar">S</div>
+                <div>
+                    <strong>Student</strong>
+                    <small>Mewar University</small>
+                </div>
+            </div>
         </header>
 
         <section class="page-heading">
@@ -50,61 +66,103 @@
         </section>
 
         <div class="analysis-layout">
+
             <section class="panel upload-panel">
                 <div class="panel-heading">
-                    <div><h2>☁ Upload study material</h2>
-                    <p>Select a file to start learning.</p></div>
+                    <div>
+                        <h2>☁ Upload study material</h2>
+                        <p>Select one or multiple files to start learning.</p>
+                    </div>
                 </div>
 
                 <form id="uploadForm">
                     <label for="studyFile" class="drop-zone" id="dropZone">
                         <div class="upload-symbol">↑</div>
-                        <h3>Choose a file to upload</h3>
-                        <p>Click here to browse your device</p>
-                        <small>PDF, TXT, DOCX, PNG, JPG or WEBP · Max 20 MB</small>
-                        <input id="studyFile" type="file"
-                               accept=".pdf,.txt,.docx,.png,.jpg,.jpeg,.webp"
-                               required>
+                        <h3>Choose study files to upload</h3>
+                        <p>Click here to select files from your device</p>
+                        <small>
+                            PDF, PPTX, DOCX, MD and TXT ·
+                            Max 14 MB per file · Up to 10 files
+                        </small>
+
+                        <input
+                            id="studyFile"
+                            type="file"
+                            accept=".pdf,.pptx,.docx,.md,.txt"
+                            multiple
+                            required
+                        >
                     </label>
 
-                    <div id="selectedFile" class="selected-file">No file selected yet</div>
-                    <button id="uploadButton" class="btn btn-primary full-width" type="submit">
+                    <div id="selectedFile" class="selected-file">
+                        No files selected yet
+                    </div>
+
+                    <button
+                        id="uploadButton"
+                        class="btn btn-primary full-width"
+                        type="submit"
+                    >
                         Upload & Analyze
                     </button>
+
                     <p id="uploadStatus" class="status-message" role="status"></p>
                 </form>
 
                 <div class="upload-help">
                     <strong>How it works</strong>
-                    <p>1. Select your study file.</p>
-                    <p>2. Wait for the upload confirmation.</p>
-                    <p>3. Ask the AI assistant about the uploaded content.</p>
+                    <p>1. Select one or more supported study files.</p>
+                    <p>2. Wait for the upload and text extraction to finish.</p>
+                    <p>3. Ask Campus AI questions about your uploaded material.</p>
                 </div>
             </section>
 
             <section class="panel chat-panel">
                 <div class="chat-header">
                     <div class="ai-avatar">✦</div>
-                    <div><h2>Campus AI Assistant</h2><p><span class="online-dot"></span> Study assistant</p></div>
+                    <div>
+                        <h2>Campus AI Assistant</h2>
+                        <p><span class="online-dot"></span> Study assistant</p>
+                    </div>
                 </div>
 
                 <div id="chatMessages" class="chat-messages" aria-live="polite">
                     <div class="message assistant-message">
                         <strong>Campus AI</strong>
-                        <p>Hi! Upload your study material first. Then ask me anything about it. I'll explain it in simple words.</p>
+                        <p>
+                            Hi! Upload your study material first. You can upload
+                            PDF, PPTX, DOCX, MD and TXT files. Then ask me
+                            questions about their content. I'll explain it in
+                            simple words.
+                        </p>
                     </div>
                 </div>
 
                 <form id="chatForm" class="chat-form">
-                    <textarea id="chatInput" rows="2"
-                        placeholder="Ask a question about your file..." required></textarea>
-                    <button id="sendButton" type="submit" aria-label="Send message">➤</button>
+                    <textarea
+                        id="chatInput"
+                        rows="2"
+                        placeholder="Ask a question about your files..."
+                        required
+                    ></textarea>
+
+                    <button
+                        id="sendButton"
+                        type="submit"
+                        aria-label="Send message"
+                    >➤</button>
                 </form>
-                <p class="chat-hint">AI-generated answers may contain mistakes. Check important details against your notes.</p>
+
+                <p class="chat-hint">
+                    AI-generated answers may contain mistakes.
+                    Check important details against your notes.
+                </p>
             </section>
+
         </div>
     </main>
 </div>
+
 <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 </body>
 </html>

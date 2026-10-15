@@ -1,306 +1,373 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#060919">
+    <meta name="description" content="Mewar Campus AI / IQ G�� Your AI Powered Study Companion. Upload notes, take quizzes, and track progress.">
 
-    <meta name="theme-color" content="#080D22">
-    <meta name="description"
-          content="Mewar Campus IQ — your AI-powered study companion.">
-
-    <title>Sign In | Mewar Campus IQ</title>
+    <title>Sign In &amp; Sign Up | Mewar Campus AI</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/auth.css') }}">
-
-    <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/auth.css') }}">
+    <script src="{{ url_for('static', filename='JS/auth.js') }}" defer></script>
 </head>
 
 <body>
-    <main class="auth-page">
+    <!-- TOP NAVIGATION / BRAND HEADER -->
+    <header class="top-header">
+        <a href="/" class="brand-wrapper" aria-label="Mewar Campus AI Home">
+            <img src="{{ url_for('static', filename='images/logo_icon.png') }}"
+                 onerror="this.src='{{ url_for('static', filename='images/card_cap_icon.png') }}'"
+                 alt="Mewar Logo" class="brand-logo-img">
+            <div class="brand-info">
+                <div class="brand-name">Mewar Campus <span>AI</span></div>
+                <div class="brand-slogan">LEARN &bull; PRACTICE &bull; GROW</div>
+            </div>
+        </a>
 
-        <!-- Decorative background -->
-        <div class="ambient ambient-one" aria-hidden="true"></div>
-        <div class="ambient ambient-two" aria-hidden="true"></div>  
-        <div class="grid-overlay" aria-hidden="true"></div>
+        <div class="top-slogan-right">
+            <span>Smarter Learning</span>
+            <span class="slogan-star" aria-hidden="true">G��</span>
+            <span>Brighter Future</span>
+        </div>
+    </header>
 
-        <!-- LEFT PANEL -->
-        <section class="hero-panel">
+    <!-- MAIN TWO-COLUMN LAYOUT -->
+    <main class="main-wrapper">
+        
 
-            <a class="brand" href="{{ url_for('home') }}"
-               aria-label="Mewar Campus IQ home">
+        <!-- LEFT HERO COLUMN -->
+        <section class="hero-column">
+            <h1 class="hero-heading">
+                Your AI-Powered<br>
+                <span class="gradient-text">Study Companion</span>
+            </h1>
 
-                <span class="brand-mark" aria-hidden="true">
-                    <svg viewBox="0 0 48 48" fill="none">
-                        <path d="M24 4 3 14l21 11 21-11L24 4Z"
-                              fill="url(#logoGradient)"/>
-                        <path d="M10 19v12l14 8 14-8V19L24 27 10 19Z"
-                              fill="#287BFF"/>
-                        <path d="M39 17v11" stroke="#8EEAFF"
-                              stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="39" cy="32" r="2" fill="#8EEAFF"/>
+            <p class="hero-description">
+                Upload your study material, get smart insights, take quizzes,
+                track your progress and achieve your academic goals &mdash; all in one place.
+            </p>
 
-                        <defs>
-                            <linearGradient id="logoGradient"
-                                            x1="3" y1="4" x2="45" y2="25">
-                                <stop stop-color="#B14DFF"/>
-                                <stop offset="1" stop-color="#258BFF"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </span>
-
-                <span class="brand-copy">
-                    <span class="brand-title">
-                        Mewar Campus <span>IQ</span>
-                    </span>
-                    <span class="brand-tagline">LEARN. PRACTICE. GROW.</span>
-                </span>
-            </a>
-
-            <div class="hero-content">
-
-                <div class="eyebrow">
-                    <span class="live-dot"></span>
-                    YOUR PERSONAL AI STUDY SPACE
+            <!-- 4 CIRCULAR FEATURE BADGES (PIXEL-MATCHED TO DESIGN) -->
+            <div class="features-grid" role="list">
+                <!-- 1. Upload Notes & PDFs -->
+                <div class="feature-badge-item" role="listitem">
+                    <div class="feature-circle circle-notes" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="12" y2="12"></line>
+                            <line x1="15" y1="15" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div class="feature-label">Upload<br>Notes &amp; PDFs</div>
                 </div>
 
-                <h1>
-                    Turn your<br>
-                    ambition into<br>
-                    <span class="gradient-text">achievement.</span>
-                </h1>
-
-                <p class="hero-description">
-                    One intelligent space for your notes, quizzes,
-                    revision plans and AI-powered learning.
-                    Make every study session count.
-                </p>
-
-                <div class="feature-list">
-
-                    <article class="feature-item">
-                        <span class="feature-icon icon-purple"
-                              aria-hidden="true">✧</span>
-                        <div>
-                            <h3>AI Study Assistant</h3>
-                            <p>Explore concepts and understand topics.</p>
-                        </div>
-                    </article>
-
-                    <article class="feature-item">
-                        <span class="feature-icon icon-blue"
-                              aria-hidden="true">▤</span>
-                        <div>
-                            <h3>Smart Notes &amp; PDFs</h3>
-                            <p>Keep your learning materials organized.</p>
-                        </div>
-                    </article>
-
-                    <article class="feature-item">
-                        <span class="feature-icon icon-cyan"
-                              aria-hidden="true">↗</span>
-                        <div>
-                            <h3>Quizzes &amp; Revision</h3>
-                            <p>Practice regularly and track your progress.</p>
-                        </div>
-                    </article>
-
+                <!-- 2. AI-Powered Chat & Summary -->
+                <div class="feature-badge-item" role="listitem">
+                    <div class="feature-circle circle-chat" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"></path>
+                            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-label">AI-Powered<br>Chat &amp; Summary</div>
                 </div>
 
-                <div class="hero-stat">
-                    <span class="stat-line"></span>
-                    <p>Learn with purpose. Grow with confidence.</p>
+                <!-- 3. Smart Quiz Generation -->
+                <div class="feature-badge-item" role="listitem">
+                    <div class="feature-circle circle-quiz" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-label">Smart<br>Quiz Generation</div>
                 </div>
 
+                <!-- 4. Track Progress & Revision Plan -->
+                <div class="feature-badge-item" role="listitem">
+                    <div class="feature-circle circle-progress" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="feature-label">Track Progress<br>&amp; Revision Plan</div>
+                </div>
             </div>
 
-            <footer class="hero-footer">
-                <span>MEWAR CAMPUS IQ</span>
-                <span>BUILT FOR BETTER LEARNING</span>
-            </footer>
-
+            <!-- CAMPUS & LAPTOP VISUAL WITH SLOGAN -->
+            <div class="campus-visual-wrap">
+                <img src="{{ url_for('static', filename='images/campus_illustration.png') }}"
+                     alt="Mewar Campus Building and AI Study Books"
+                     class="campus-visual-img">
+            </div>
         </section>
 
-        <!-- RIGHT PANEL -->
-        <section class="form-panel">
+        <!-- RIGHT FORM COLUMN (GLASSMORPHISM CARD) -->
+        <section class="card-column">
+            <div class="auth-card" id="authCard">
 
-            <div class="login-card">
+                <!-- TOP CARD HEADER -->
+                <div class="card-top">
+                    <img src="{{ url_for('static', filename='images/card_cap_icon.png') }}"
+                         alt="Graduation Cap"
+                         class="card-cap-icon">
 
-                <div class="mobile-brand">
-                    <span class="brand-mark" aria-hidden="true">M</span>
-                    <span>Mewar Campus <strong>IQ</strong></span>
+                    <h2 class="card-title" id="cardHeading">
+                        Welcome <span class="accent">Back</span>
+                    </h2>
+
+                    <p class="card-subtitle" id="cardSubheading">
+                        Login to your Mewar Campus AI account
+                    </p>
                 </div>
 
-                <div class="welcome-symbol" aria-hidden="true">
-                    <svg viewBox="0 0 48 48" fill="none">
-                        <path d="M24 3 29 18 45 24 29 30 24 45 18 30 3 24 18 18 24 3Z"
-                              fill="url(#starGradient)"/>
-                        <defs>
-                            <linearGradient id="starGradient"
-                                            x1="3" y1="3" x2="45" y2="45">
-                                <stop stop-color="#B34DFF"/>
-                                <stop offset="1" stop-color="#26B9FF"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                <!-- TAB SWITCHER: SIGN IN vs SIGN UP -->
+                <div class="auth-tabs" role="tablist">
+                    <button type="button" class="tab-btn active" id="tabLoginBtn" role="tab" aria-selected="true">
+                        Sign In
+                    </button>
+                    <button type="button" class="tab-btn" id="tabRegisterBtn" role="tab" aria-selected="false">
+                        Sign Up
+                    </button>
                 </div>
 
-                <p class="form-eyebrow">WELCOME BACK</p>
-                <h2>Sign in to continue</h2>
+                <!-- SERVER MESSAGE ALERT -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% set has_msg = (error or register_error or messages) %}
+                {% set cat = messages[0][0] if messages else ('error' if (error or register_error) else 'info') %}
+                {% set msg_text = messages[0][1] if messages else (error or register_error or '') %}
+                <div class="server-alert {{ cat }}{% if has_msg %} visible{% endif %}"
+                     id="serverAlert"
+                     role="alert">
+                    {{ msg_text }}
+                </div>
+                {% endwith %}
 
-                <p class="form-description">
-                    Your next learning breakthrough starts here.
-                </p>
-
-                <!-- Login form -->
-                <form id="loginForm"
-                      action="{{ url_for('login') }}"
-                      method="POST">
-
-                    <div class="form-group">
-                        <label for="email">Email address</label>
-
-                        <div class="input-wrap" id="emailWrap">
-
-                            <svg class="input-icon" viewBox="0 0 24 24"
-                                 fill="none" aria-hidden="true">
-                                <rect x="3" y="5" width="18" height="14"
-                                      rx="3" stroke="currentColor"
-                                      stroke-width="1.6"/>
-                                <path d="m4 7 8 6 8-6"
-                                      stroke="currentColor"
-                                      stroke-width="1.6"
-                                      stroke-linecap="round"/>
-                            </svg>
-
+                <!-- ============================================== -->
+                <!-- 1. LOGIN FORM -->
+                <!-- ============================================== -->
+                <form id="loginForm" action="/login" method="POST" class="auth-form" novalidate>
+                    <div class="input-group">
+                        <label for="loginEmail">Email Address</label>
+                        <div class="input-box" id="loginEmailWrap">
+                            <span class="input-box-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </span>
                             <input
-                                id="email"
+                                id="loginEmail"
                                 name="email"
                                 type="email"
-                                placeholder="you@example.com"
+                                value="{{ email or '' }}"
+                                placeholder="Enter your email"
                                 autocomplete="username"
-                                autocapitalize="none"
-                                spellcheck="false"
-                                aria-describedby="emailError"
                                 required
                             >
-
                         </div>
-
-                        <small class="field-error"
-                               id="emailError"></small>
+                        <span class="field-error-text" id="loginEmailError"></span>
                     </div>
 
-                    <div class="form-group">
-
-                        <div class="label-row">
-                            <label for="password">Password</label>
-                        </div>
-
-                        <div class="input-wrap" id="passwordWrap">
-
-                            <svg class="input-icon" viewBox="0 0 24 24"
-                                 fill="none" aria-hidden="true">
-                                <rect x="4" y="10" width="16" height="11"
-                                      rx="3" stroke="currentColor"
-                                      stroke-width="1.6"/>
-                                <path d="M8 10V7a4 4 0 0 1 8 0v3"
-                                      stroke="currentColor"
-                                      stroke-width="1.6"
-                                      stroke-linecap="round"/>
-                                <path d="M12 14v3"
-                                      stroke="currentColor"
-                                      stroke-width="1.6"
-                                      stroke-linecap="round"/>
-                            </svg>
-
+                    <div class="input-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="input-box" id="loginPasswordWrap">
+                            <span class="input-box-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
                             <input
-                                id="password"
+                                id="loginPassword"
                                 name="password"
                                 type="password"
                                 placeholder="Enter your password"
                                 autocomplete="current-password"
-                                aria-describedby="passwordError"
                                 required
                             >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                id="togglePassword"
-                                aria-label="Show password"
-                                aria-pressed="false">
-                                Show
+                            <button type="button" class="toggle-pwd-btn" id="toggleLoginPassword" aria-label="Toggle password visibility">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
                             </button>
-
                         </div>
-
-                        <small class="field-error"
-                               id="passwordError"></small>
+                        <span class="field-error-text" id="loginPasswordError"></span>
                     </div>
 
-                    <!-- Server-side login error -->
-                    {% if error %}
-                    <div class="server-message error-message"
-                         role="alert" aria-live="polite">
-                        {{ error }}
+                    <div class="form-utility-row">
+                        <label class="checkbox-wrap">
+                            <input type="checkbox" name="remember" value="on" checked>
+                            <span>Remember me</span>
+                        </label>
+                        <a href="/forgot-password" class="forgot-password-link">Forgot password?</a>
                     </div>
-                    {% endif %}
 
-                    <!-- Flask flash messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% for category, message in messages %}
-                        <div class="server-message {{ category }}"
-                             role="alert" aria-live="polite">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                    {% endwith %}
-
-                    <button type="submit"
-                            class="login-button"
-                            id="loginButton">
-                        <span class="button-label">
-                            Sign in to your account
-                        </span>
-                        <span class="button-arrow" aria-hidden="true">
-                            →
-                        </span>
+                    <button type="submit" class="btn-submit-glow" id="loginSubmitBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                            <polyline points="10 17 15 12 10 7"></polyline>
+                            <line x1="15" y1="12" x2="3" y2="12"></line>
+                        </svg>
+                        <span class="btn-text">Login</span>
                     </button>
-
                 </form>
 
-                <div class="divider">
-                    <span>YOUR LEARNING JOURNEY</span>
+                <!-- ============================================== -->
+                <!-- 2. SIGN UP / REGISTRATION FORM -->
+                <!-- ============================================== -->
+                <form id="registerForm" action="/signup" method="POST" class="auth-form" style="display: none;" novalidate>
+                    <div class="input-group">
+                        <label for="regName">Full Name</label>
+                        <div class="input-box" id="regNameWrap">
+                            <span class="input-box-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <input
+                                id="regName"
+                                name="name"
+                                type="text"
+                                value="{{ name or '' }}"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                required
+                            >
+                        </div>
+                        <span class="field-error-text" id="regNameError"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="regEmail">Email Address</label>
+                        <div class="input-box" id="regEmailWrap">
+                            <span class="input-box-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </span>
+                            <input
+                                id="regEmail"
+                                name="email"
+                                type="email"
+                                value="{{ email or '' }}"
+                                placeholder="Enter your college or personal email"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                        <span class="field-error-text" id="regEmailError"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="regPassword">Password</label>
+                        <div class="input-box" id="regPasswordWrap">
+                            <span class="input-box-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input
+                                id="regPassword"
+                                name="password"
+                                type="password"
+                                placeholder="Minimum 6 characters"
+                                autocomplete="new-password"
+                                required
+                            >
+                            <button type="button" class="toggle-pwd-btn" id="toggleRegPassword" aria-label="Toggle password visibility">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="field-error-text" id="regPasswordError"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="regConfirmPassword">Confirm Password</label>
+                        <div class="input-box" id="regConfirmWrap">
+                            <span class="input-box-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input
+                                id="regConfirmPassword"
+                                name="confirm_password"
+                                type="password"
+                                placeholder="Repeat your password"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+                        <span class="field-error-text" id="regConfirmError"></span>
+                    </div>
+
+                    <button type="submit" class="btn-submit-glow" id="regSubmitBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                        <span class="btn-text">Create Account</span>
+                    </button>
+                </form>
+
+                <!-- OR DIVIDER -->
+                <div class="or-divider">
+                    <span>OR</span>
                 </div>
 
-                <p class="register-prompt">
-                    Don't have an account?
-                    <a href="{{ url_for('signup') }}"
-                       class="register-link">
-                        Create one
-                    </a>
+                <!-- CONTINUE WITH GOOGLE BUTTON -->
+                <a href="/auth/google" class="btn-google">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.25 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>Continue with Google</span>
+                </a>
+
+                <!-- BOTTOM TOGGLE PROMPT -->
+                <p class="card-bottom-prompt" id="bottomPromptWrap">
+                    <span id="promptText">Don't have an account?</span>
+                    <a href="javascript:void(0)" id="toggleModeLink">Register here</a>
                 </p>
 
-                <div class="privacy-note">
-                    <span aria-hidden="true">◇</span>
-                    <span>Learn securely. Grow confidently.</span>
+                <!-- DEMO CREDENTIALS QUICK PILL -->
+                <div class="demo-badge-wrap">
+                    <span class="pill">DEMO LOGIN</span>
+                    <code>student@mewar.edu</code> &bull; <code>mewar123</code>
                 </div>
 
             </div>
-
-            <p class="bottom-note">
-                © <span id="currentYear"></span> Mewar Campus IQ
-            </p>
-
         </section>
     </main>
+
+    <!-- HIDDEN FLAG FOR SERVER-SIDE SIGNUP TRIGGER -->
+    {% if show_register %}
+    <script>
+        window.__SHOW_REGISTER_TAB__ = true;
+    </script>
+    {% endif %}
 </body>
 </html>
+
+
