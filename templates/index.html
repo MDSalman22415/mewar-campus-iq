@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mewar Campus IQ | Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <a href="/" class="brand">
+            <span class="brand-icon">🎓</span>
+            <span><strong>Mewar Campus IQ</strong><small>AI-Powered Study Companion</small></span>
+        </a>
+
+        <nav class="navigation">
+            <a class="nav-item active" href="/"><span>⌂</span> Home</a>
+            <a class="nav-item" href="/upload"><span>☁</span> Upload & Analyze</a>
+            <div class="nav-item"><span>▤</span> Coverage Analysis</div>
+            <div class="nav-item"><span>☷</span> Topic Quiz</div>
+            <div class="nav-item"><span>▦</span> Revision Planner</div>
+            <div class="nav-item ai-nav"><span>✦</span> Ask Campus AI</div>
+            <div class="nav-item"><span>◴</span> Study Timer</div>
+            <div class="nav-item"><span>▱</span> My Library</div>
+            <div class="nav-item"><span>⚙</span> Settings</div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="campus-drawing">🏛️</div>
+            <p>Smarter Learning<br>Brighter Future</p>
+            <div class="university">
+                <span>🎓</span>
+                <div><strong>Mewar University</strong><small>Learn · Grow · Achieve</small></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search-box">
+                <span>⌕</span>
+                <input id="dashboardSearch" placeholder="Search files, topics, or ask a question...">
+                <kbd>Ctrl + K</kbd>
+            </div>
+
+            <div class="profile">
+                <span class="bell">♧</span>
+                <div class="avatar">S</div>
+                <div><strong>Student</strong><small>Mewar University</small></div>
+            </div>
+
+            <!-- Added Signup and Login buttons; existing content preserved -->
+            <div class="auth-buttons">
+                <a href="/signup" class="btn btn-primary">Sign Up</a>
+                <a href="/login" class="btn btn-outline">Login</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-content">
+                <span class="tag">✦ Mewar Campus IQ</span>
+                <h1>Your next breakthrough<br><span>starts here.</span></h1>
+                <p>Your study space, organized around you.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="/upload">☁ &nbsp; Upload study material →</a>
+                    <a class="btn btn-outline" href="#quick-actions">◎ &nbsp; Explore topics</a>
+                </div>
+            </div>
+            <div class="hero-art">
+                <span class="bubble bubble-one">📘</span>
+                <span class="bubble bubble-two">🧠</span>
+                <span class="bubble bubble-three">🎓</span>
+                <div class="hero-book">📖</div>
+                <div class="hero-slogan">Better Notes<br>Smarter Learning<br>Bigger Dreams</div>
+            </div>
+        </section>
+
+        <section id="quick-actions" class="dashboard-section">
+            <div class="section-title">
+                <h2><span>ϟ</span> Quick Actions</h2>
+                <p>Jump into what you need, faster.</p>
+            </div>
+
+            <div class="quick-grid">
+                <div class="quick-card blue">
+                    <div class="card-icon">▤</div>
+                    <div><h3>Continue Reading</h3><p>Pick up where you left off with your study material.</p></div>
+                </div>
+                <div class="quick-card purple">
+                    <div class="card-icon">☷</div>
+                    <div><h3>Topic Quiz</h3><p>Test your knowledge with AI-powered quizzes.</p></div>
+                </div>
+                <div class="quick-card green">
+                    <div class="card-icon">▣</div>
+                    <div><h3>Coverage Analysis</h3><p>See what's covered, missing and needs attention.</p></div>
+                </div>
+                <div class="quick-card orange">
+                    <div class="card-icon">◷</div>
+                    <div><h3>Focus Session</h3><p>Stay consistent with your study routine.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="dashboard-columns">
+            <section class="panel">
+                <div class="panel-heading">
+                    <div><h2>▤ &nbsp; Pick up where you left off</h2>
+                    <p>Your study materials will appear here.</p></div>
+                    <a href="/upload">Upload files →</a>
+                </div>
+
+                <div class="empty-files">
+                    <span>📂</span>
+                    <h3>Your study library</h3>
+                    <p>Upload a PDF, document, or image to get started.</p>
+                    <a href="/upload" class="btn btn-primary">Upload study material</a>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-heading">
+                    <div><h2>✧ &nbsp; Your study space</h2>
+                    <p>Your learning dashboard at a glance.</p></div>
+                </div>
+
+                <div class="widget-grid">
+                    <div class="widget blue"><span>📘</span><div><h3>Recent Topics</h3><p>Return to your learning.</p></div></div>
+                    <div class="widget purple"><span>✦</span><div><h3>AI Study Assistant</h3><p>Ask about your uploaded file.</p></div></div>
+                    <div class="widget green"><span>▦</span><div><h3>Today's Plan</h3><p>Organize your revision.</p></div></div>
+                    <div class="widget orange"><span>▱</span><div><h3>Saved Resources</h3><p>Keep your notes together.</p></div></div>
+                </div>
+
+                <div class="motivation">
+                    <span>🎓</span>
+                    <div><strong>Stay consistent, stay ahead!</strong><p>Small steps every day lead to big results.</p></div>
+                </div>
+            </section>
+        </div>
+
+        <footer>Mewar Campus IQ · Learn smarter, every day.</footer>
+    </main>
+</div>
+
+<script>
+document.getElementById("dashboardSearch").addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && this.value.trim()) {
+        window.location.href = "/upload";
+    }
+});
+
+document.addEventListener("keydown", function (event) {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        document.getElementById("dashboardSearch").focus();
+    }
+});
+</script>
+</body>
+</html>
