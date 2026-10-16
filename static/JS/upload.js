@@ -15,18 +15,184 @@ const MAX_FILE_SIZE = 14 * 1024 * 1024;
 const MAX_TOTAL_SIZE = 50 * 1024 * 1024;
 const MAX_FILES = 10;
 
+let documents = [];
 let fileUploaded = false;
+let isUploading = false;
+let isAsking = false;
+
+// --------------------------------------------------
+// 1. CREATE DOCUMENT SELECTOR
+// --------------------------------------------------
+
+const documentSelectorWrapper = document.createElement("div");
+documentSelectorWrapper.className = "document-selector-wrapper";
+documentSelectorWrapper.style.margin = "12px 0";
+
+const documentLabel = document.createElement("label");
+documentLabel.htmlFor = "documentSelector";
+documentLabel.textContent = "Choose a study document";
+documentLabel.style.display = "block";
+documentLabel.style.marginBottom = "6px";
+
+const documentSelector = document.createElement("select");
+documentSelector.id = "documentSelector";
+documentSelector.style.width = "100%";
+documentSelector.style.padding = "10px";
+
+const defaultOption = document.createElement("option");
+defaultOption.value = "";
+defaultOption.textContent = "Select a document first";
+
+documentSelector.appendChild(defaultOption);
+documentSelectorWrapper.appendChild(documentLabel);
+documentSelectorWrapper.appendChild(documentSelector);
+
+// Insert selector before chat form.
+chatForm.parentNode.insertBefore(
+    documentSelectorWrapper,
+    chatForm
+);
 
 sendButton.disabled = true;
 chatInput.disabled = true;
 
-// Display and validate selected files
+// --------------------------------------------------
+// 2. UPDATE CHAT CONTROLS
+// --------------------------------------------------
+
+function updateChatControls() {
+    const hasSelectedDocument =
+        documentSelector.value !== "" &&
+        documents.some(
+            item => String(item.id) === documentSelector.value
+        );
+
+    fileUploaded = hasSelectedDocument;
+
+    chatInput.disabled = !hasSelectedDocument || isUploading;
+    sendButton.disabled =
+        !hasSelectedDocument || isUploading || isAsking;
+}
+
+documentSelector.addEventListener("change", () => {
+    updateChatControls();
+
+    const selectedDocument = documents.find(
+        item => String(item.id) === documentSelector.value
+    );
+
+    if (selectedDocument) {
+        uploadStatus.textContent =
+            `Selected document: ${selectedDocument.filename}`;
+    }
+});
+
+// --------------------------------------------------
+// 3. LOAD AND DISPLAY DOCUMENTS
+// --------------------------------------------------
+
+async function refreshDocuments(preferredIds = [], preferredNames = []) {
+    const previousSelection = documentSelector.value;
+
+    try {
+        const response = await fetch("/api/documents");
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.error || "Could not load your documents."
+            );
+        }
+
+        documents = Array.isArray(result.documents)
+            ? result.documents
+            : [];
+
+        documentSelector.replaceChildren();
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = documents.length
+            ? "Select a document"
+            : "No documents uploaded yet";
+
+        documentSelector.appendChild(placeholder);
+
+        documents.forEach(item => {
+            const option = document.createElement("option");
+            option.value = String(item.id);
+            option.textContent =
+                `${item.filename} (ID: ${item.id})`;
+
+            documentSelector.appendChild(option);
+        });
+
+        // Prefer a newly uploaded document when possible.
+        let desiredId = "";
+
+        for (const id of preferredIds) {
+            if (documents.some(
+                item => String(item.id) === String(id)
+            )) {
+                desiredId = String(id);
+                break;
+            }
+        }
+
+        // Fallback for upload responses that don't include IDs.
+        if (!desiredId && preferredNames.length) {
+            const matchingDocument = [...documents].find(
+                item => preferredNames.includes(item.filename)
+            );
+
+            if (matchingDocument) {
+                desiredId = String(matchingDocument.id);
+            }
+        }
+
+        // Otherwise preserve the user's previous selection.
+        if (
+            !desiredId &&
+            documents.some(
+                item => String(item.id) === previousSelection
+            )
+        ) {
+            desiredId = previousSelection;
+        }
+
+        // Otherwise select the most recent document.
+        if (!desiredId && documents.length) {
+            desiredId = String(documents[0].id);
+        }
+
+        documentSelector.value = desiredId;
+        updateChatControls();
+
+        return documents;
+
+    } catch (error) {
+        documents = [];
+        documentSelector.replaceChildren();
+
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Could not load documents";
+
+        documentSelector.appendChild(option);
+        updateChatControls();
+
+        uploadStatus.textContent = error.message;
+        return [];
+    }
+}
+
+// --------------------------------------------------
+// 4. VALIDATE SELECTED FILES
+// --------------------------------------------------
+
 fileInput.addEventListener("change", () => {
     const files = Array.from(fileInput.files);
 
-    fileUploaded = false;
-    sendButton.disabled = true;
-    chatInput.disabled = true;
     uploadStatus.textContent = "";
 
     if (files.length === 0) {
@@ -34,14 +200,14 @@ fileInput.addEventListener("change", () => {
         return;
     }
 
-    selectedFile.textContent = files
-        .map(file =>
-            `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`
-        )
-        .join(", ");
+    selectedFile.textContent = files.map(file =>
+        `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`
+    ).join(", ");
 
     if (files.length > MAX_FILES) {
-        uploadStatus.textContent = `You can upload a maximum of ${MAX_FILES} files.`;
+        uploadStatus.textContent =
+            `You can upload a maximum of ${MAX_FILES} files.`;
+
         fileInput.value = "";
         selectedFile.textContent = "No files selected yet";
         return;
@@ -56,38 +222,57 @@ fileInput.addEventListener("change", () => {
     if (invalidFile) {
         uploadStatus.textContent =
             `${invalidFile.name}: Only PDF, PPTX, DOCX, MD and TXT files are supported.`;
+
         fileInput.value = "";
         selectedFile.textContent = "No files selected yet";
         return;
     }
 
-    const oversizedFile = files.find(file => file.size > MAX_FILE_SIZE);
+    const oversizedFile = files.find(
+        file => file.size > MAX_FILE_SIZE
+    );
 
     if (oversizedFile) {
         uploadStatus.textContent =
             `${oversizedFile.name}: Each file must be 14 MB or smaller.`;
+
         fileInput.value = "";
         selectedFile.textContent = "No files selected yet";
         return;
     }
 
-    const totalSize = files.reduce((total, file) => total + file.size, 0);
+    const totalSize = files.reduce(
+        (total, file) => total + file.size,
+        0
+    );
 
     if (totalSize > MAX_TOTAL_SIZE) {
-        uploadStatus.textContent = "Total upload size must be 50 MB or less.";
+        uploadStatus.textContent =
+            "Total upload size must be 50 MB or less.";
+
         fileInput.value = "";
         selectedFile.textContent = "No files selected yet";
     }
 });
 
-// Upload multiple files
+// --------------------------------------------------
+// 5. UPLOAD DOCUMENTS
+// --------------------------------------------------
+
 uploadForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const files = Array.from(fileInput.files);
 
     if (files.length === 0) {
-        uploadStatus.textContent = "Please select at least one file.";
+        uploadStatus.textContent =
+            "Please select at least one file.";
+        return;
+    }
+
+    if (files.length > MAX_FILES) {
+        uploadStatus.textContent =
+            `You can upload a maximum of ${MAX_FILES} files.`;
         return;
     }
 
@@ -104,15 +289,19 @@ uploadForm.addEventListener("submit", async event => {
     }
 
     if (files.some(file => file.size > MAX_FILE_SIZE)) {
-        uploadStatus.textContent = "Each file must be 14 MB or smaller.";
+        uploadStatus.textContent =
+            "Each file must be 14 MB or smaller.";
         return;
     }
 
-    const totalSize = files.reduce((total, file) => total + file.size, 0);
+    const totalSize = files.reduce(
+        (total, file) => total + file.size,
+        0
+    );
 
-    if (files.length > MAX_FILES || totalSize > MAX_TOTAL_SIZE) {
+    if (totalSize > MAX_TOTAL_SIZE) {
         uploadStatus.textContent =
-            "Maximum 10 files and 50 MB total upload size allowed.";
+            "Total upload size must be 50 MB or less.";
         return;
     }
 
@@ -122,9 +311,13 @@ uploadForm.addEventListener("submit", async event => {
         formData.append("files", file);
     });
 
+    isUploading = true;
+    updateChatControls();
+
     uploadButton.disabled = true;
     uploadButton.textContent = "Uploading...";
-    uploadStatus.textContent = "Uploading and extracting document text...";
+    uploadStatus.textContent =
+        "Uploading and extracting document text...";
 
     try {
         const response = await fetch("/api/pdf/upload", {
@@ -135,33 +328,55 @@ uploadForm.addEventListener("submit", async event => {
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.error || "File upload failed.");
+            throw new Error(
+                result.error || "File upload failed."
+            );
         }
 
-        fileUploaded = true;
-        sendButton.disabled = false;
-        chatInput.disabled = false;
+        const uploadedFiles = Array.isArray(result.files)
+            ? result.files
+            : [];
 
-        uploadStatus.textContent =
-            result.message || `${files.length} file(s) uploaded successfully.`;
+        const uploadedIds = uploadedFiles
+            .map(item => item.id)
+            .filter(id => id !== undefined && id !== null);
+
+        const uploadedNames = uploadedFiles
+            .map(item => item.filename)
+            .filter(Boolean);
+
+        // Refresh the document selector after uploading.
+        await refreshDocuments(uploadedIds, uploadedNames);
 
         addMessage(
             "assistant",
-            `Your study files have been processed: ${files.map(file => file.name).join(", ")}. You can now ask questions about your uploaded material.`
+            `${result.message || "Upload completed."} Select a document from the dropdown before asking questions.`
         );
 
+        if (Array.isArray(result.errors) && result.errors.length) {
+            uploadStatus.textContent =
+                "Some files could not be processed: " +
+                result.errors.join(" ");
+        } else {
+            uploadStatus.textContent =
+                result.message || "Upload completed successfully.";
+        }
+
     } catch (error) {
-        fileUploaded = false;
-        sendButton.disabled = true;
-        chatInput.disabled = true;
         uploadStatus.textContent = error.message;
+
     } finally {
+        isUploading = false;
         uploadButton.disabled = false;
         uploadButton.textContent = "Upload & Analyze";
+        updateChatControls();
     }
 });
 
-// Add messages to chat
+// --------------------------------------------------
+// 6. CHAT MESSAGE HELPER
+// --------------------------------------------------
+
 function addMessage(type, text) {
     const message = document.createElement("div");
 
@@ -185,28 +400,57 @@ function addMessage(type, text) {
     return message;
 }
 
-// Ask questions about uploaded documents
+// --------------------------------------------------
+// 7. ASK ABOUT THE SELECTED DOCUMENT
+// --------------------------------------------------
+
 chatForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    if (!fileUploaded) {
-        addMessage("assistant", "Please upload your study material first.");
+    if (isAsking || isUploading) {
+        return;
+    }
+
+    const documentId = documentSelector.value;
+
+    if (!documentId) {
+        addMessage(
+            "assistant",
+            "Please select a study document first."
+        );
+        return;
+    }
+
+    const selectedDocument = documents.find(
+        item => String(item.id) === documentId
+    );
+
+    if (!selectedDocument) {
+        addMessage(
+            "assistant",
+            "This document is unavailable. Please refresh the document list."
+        );
+
+        await refreshDocuments();
         return;
     }
 
     const question = chatInput.value.trim();
 
-    if (!question) return;
+    if (!question) {
+        return;
+    }
 
     addMessage("user", question);
     chatInput.value = "";
 
     const waitingMessage = addMessage(
         "assistant",
-        "Let me check your uploaded study material..."
+        `Checking "${selectedDocument.filename}"...`
     );
 
-    sendButton.disabled = true;
+    isAsking = true;
+    updateChatControls();
 
     try {
         const response = await fetch("/api/ask", {
@@ -214,22 +458,37 @@ chatForm.addEventListener("submit", async event => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ question })
+            body: JSON.stringify({
+                question: question,
+                document_id: Number(documentId)
+            })
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.error || "Could not get an answer.");
+            throw new Error(
+                result.error || "Could not get an answer."
+            );
         }
 
-        waitingMessage.querySelector("p").textContent = result.answer;
+        waitingMessage.querySelector("p").textContent =
+            result.answer;
 
     } catch (error) {
-        waitingMessage.querySelector("p").textContent = error.message;
+        waitingMessage.querySelector("p").textContent =
+            error.message;
+
     } finally {
-        sendButton.disabled = !fileUploaded;
+        isAsking = false;
+        updateChatControls();
         chatInput.focus();
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 });
+
+// --------------------------------------------------
+// 8. INITIALIZE EXISTING DOCUMENTS
+// --------------------------------------------------
+
+refreshDocuments();

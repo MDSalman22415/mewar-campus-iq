@@ -9,7 +9,114 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .upload-page-heading h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #172554;
+        }
+
+        .upload-page-heading p {
+            margin: 6px 0 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .user-details {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .user-name {
+            color: #1e3a8a;
+            font-size: 14px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .user-email {
+            color: #64748b;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .sidebar-logout-form {
+            margin: 14px 14px 18px;
+        }
+
+        .sidebar-logout-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            background: #fff1f2;
+            color: #be123c;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .sidebar-logout-button:hover {
+            background: #e11d48;
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                align-items: stretch;
+            }
+
+            .user-profile {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
 </head>
+
 <body>
 <div class="app-layout">
 
@@ -24,9 +131,9 @@
 
         <nav class="navigation">
             <a class="nav-item" href="/">⌂ &nbsp; Home</a>
-            <a class="nav-item active" href="/upload">☁ &nbsp; Upload & Analyze</a>
-            <div class="nav-item">▤ &nbsp; Coverage Analysis</div>
-            <div class="nav-item">☷ &nbsp; Topic Quiz</div>
+            <a class="nav-item active" href="/upload">⇧ &nbsp; Upload & Analyze</a>
+            <a class="nav-item" href="/coverage">▤ &nbsp; Coverage Analysis</a>
+            <a class="nav-item" href="{{ url_for('topic_quiz') }}">☷ &nbsp; Topic Quiz</a>
             <div class="nav-item">▦ &nbsp; Revision Planner</div>
             <div class="nav-item ai-nav">✦ &nbsp; Ask Campus AI</div>
             <div class="nav-item">◴ &nbsp; Study Timer</div>
@@ -34,8 +141,19 @@
             <div class="nav-item">⚙ &nbsp; Settings</div>
         </nav>
 
+        {% if session.get("user_id") %}
+        <form method="POST"
+              action="{{ url_for('logout') }}"
+              class="sidebar-logout-form">
+            <button type="submit" class="sidebar-logout-button">
+                <span>↪</span>
+                <span>Logout</span>
+            </button>
+        </form>
+        {% endif %}
+
         <div class="sidebar-footer">
-            <div class="campus-drawing">🏛️</div>
+            <div class="campus-drawing">🏫</div>
             <p>Smarter Learning<br>Brighter Future</p>
             <div class="university">
                 <span>🎓</span>
@@ -48,29 +166,35 @@
     </aside>
 
     <main class="main-content">
+
         <header class="topbar">
-            <a href="/" class="back-link">← Home</a>
-            <div class="profile">
-                <div class="avatar">S</div>
-                <div>
-                    <strong>Student</strong>
-                    <small>Mewar University</small>
+            <div class="upload-page-heading">
+                <h1>Upload & Analyze</h1>
+                <p>Upload your study material and learn with Campus AI.</p>
+            </div>
+
+            {% set display_name = session.get('user_name') or session.get('name') or (session.get('user_email', '').split('@')[0] if session.get('user_email') else 'Student') %}
+            {% set display_email = session.get('user_email') or session.get('email') or '' %}
+
+            <div class="user-profile">
+                <div class="user-avatar">
+                    {{ display_name[0]|upper if display_name else 'S' }}
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ display_name }}</span>
+                    {% if display_email %}
+                    <span class="user-email">{{ display_email }}</span>
+                    {% endif %}
                 </div>
             </div>
         </header>
 
-        <section class="page-heading">
-            <span class="tag">✦ Mewar Campus IQ</span>
-            <h1>Upload <span>& Analyze</span></h1>
-            <p>Upload your study material and ask questions in simple words.</p>
-        </section>
-
-        <div class="analysis-layout">
+        <div class="upload-layout">
 
             <section class="panel upload-panel">
-                <div class="panel-heading">
+                <div class="panel-header">
                     <div>
-                        <h2>☁ Upload study material</h2>
+                        <h2>Upload Study Material</h2>
                         <p>Select one or multiple files to start learning.</p>
                     </div>
                 </div>
@@ -163,6 +287,6 @@
     </main>
 </div>
 
-<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<script src="{{ url_for('static', filename='js/upload.js') }}" defer></script>
 </body>
 </html>

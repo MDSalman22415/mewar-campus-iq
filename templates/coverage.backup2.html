@@ -1,0 +1,139 @@
+<!-- 1. templates/coverage.html  -->
+{% extends "base.html" %}
+
+{% block title %}Coverage Analysis | Mewar Campus IQ{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/coverage.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="coverage-page" id="coverageApp">
+  <header class="coverage-header">
+    <div>
+      <p class="eyebrow">MEWAR CAMPUS IQ</p>
+      <h1>Coverage Analysis</h1>
+      <p class="muted">
+        Analyse uploaded study material against syllabus topics.
+      </p>
+    </div>
+    <span class="live-label">● Model connected through API</span>
+  </header>
+
+  <section class="panel controls-panel">
+    <div class="field">
+      <label for="coverageFile">Select uploaded file</label>
+      <select id="coverageFile">
+        <option value="">Loading uploaded files...</option>
+      </select>
+    </div>
+    <button id="analyzeCoverage" class="primary-btn">
+      Analyse file
+    </button>
+    <button id="refreshFiles" class="secondary-btn">
+      Refresh files
+    </button>
+  </section>
+
+  <div id="coverageMessage" class="message" role="status"
+       aria-live="polite">Select an uploaded file to begin.</div>
+
+  <section class="metrics-grid">
+    <article class="metric-card">
+      <span>Overall coverage</span>
+      <strong id="coveragePercent">—</strong>
+      <div class="progress-track">
+        <div id="coverageProgress" class="progress-fill"></div>
+      </div>
+    </article>
+
+    <article class="metric-card">
+      <span>Found</span>
+      <strong id="foundCount">—</strong>
+      <small>Topics with 3 or more matched keywords</small>
+    </article>
+
+    <article class="metric-card">
+      <span>Partial</span>
+      <strong id="partialCount">—</strong>
+      <small>Topics with 1–2 matched keywords</small>
+    </article>
+
+    <article class="metric-card">
+      <span>Not found</span>
+      <strong id="missingCount">—</strong>
+      <small>Topics with no matched keywords</small>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading">
+      <div>
+        <h2>Topic-wise results</h2>
+        <p class="muted">Results returned by your coverage.py model</p>
+      </div>
+      <button id="exportCoverage" class="secondary-btn" disabled>
+        Export CSV
+      </button>
+    </div>
+
+    <div class="table-filters">
+      <input id="topicSearch" type="search"
+             placeholder="Search topic or keyword...">
+      <select id="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="Found">Found</option>
+        <option value="Partial">Partial</option>
+        <option value="Not Found">Not found</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Status</th>
+            <th>Matched keywords</th>
+            <th>Evidence</th>
+          </tr>
+        </thead>
+        <tbody id="coverageTableBody">
+          <tr>
+            <td colspan="4" class="empty-cell">
+              Run an analysis to see results.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel recommendations-panel">
+    <h2>Recommendations</h2>
+    <p id="recommendationText" class="muted">
+      Recommendations will appear after analysis.
+    </p>
+    <div id="evidenceDetails"></div>
+  </section>
+</div>
+
+<div id="evidenceModal" class="modal" hidden>
+  <div class="modal-content" role="dialog"
+       aria-modal="true" aria-labelledby="evidenceTitle">
+    <button id="closeEvidence" class="modal-close"
+            aria-label="Close">×</button>
+    <h2 id="evidenceTitle">Topic evidence</h2>
+    <p id="evidenceTopic" class="muted"></p>
+    <pre id="evidenceSnippet"></pre>
+    <p><strong>Matched keywords:</strong></p>
+    <div id="evidenceKeywords"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/coverage.js') }}"
+        defer></script>
+{% endblock %}

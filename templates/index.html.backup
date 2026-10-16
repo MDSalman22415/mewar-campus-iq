@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mewar Campus IQ | Home</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            padding: 8px 14px;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .profile-info strong {
+            color: #1e3a8a;
+            font-size: 14px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-info small {
+            color: #64748b;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .profile .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-logout-form {
+            margin: 14px 16px 18px;
+        }
+
+        .sidebar-logout-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #fee2e2;
+            border-radius: 12px;
+            background: #fff5f5;
+            color: #b91c1c;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .sidebar-logout-button:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        /* Recent study materials */
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .document-list > .library-icon {
+            display: none;
+        }
+
+        .document-list > h3 {
+            margin: 0 0 6px;
+        }
+
+        .document-item {
+            display: grid;
+            grid-template-columns: 38px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding: 13px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .document-item:hover {
+            border-color: #bfdbfe;
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.06);
+        }
+
+        .document-item .file-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #eff6ff;
+            font-size: 20px;
+        }
+
+        .document-item .file-name {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .document-item .file-meta {
+            color: #64748b;
+            font-size: 11px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .document-list > .upload-more {
+            align-self: flex-start;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .profile {
+                gap: 8px;
+                max-width: 100%;
+            }
+
+            .profile-info {
+                max-width: 180px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .document-item {
+                grid-template-columns: 38px minmax(0, 1fr);
+                gap: 10px;
+            }
+
+            .document-item .file-meta {
+                grid-column: 2;
+                text-align: left;
+                white-space: normal;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <a href="{{ url_for('dashboard') }}" class="brand">
+            <span class="brand-icon">🎓</span>
+            <span>
+                <strong>Mewar Campus IQ</strong>
+                <small>AI-Powered Study Companion</small>
+            </span>
+        </a>
+
+        <nav class="navigation">
+            <a class="nav-item active" href="{{ url_for('dashboard') }}">
+                <span>⌂</span> Home
+            </a>
+
+            <a class="nav-item" href="{{ url_for('upload_page') }}">
+                <span>☁</span> Upload & Analyze
+            </a>
+
+            <a class="nav-item" href="{{ url_for('coverage_page') }}">
+                <span>▤</span> Coverage Analysis
+            </a>
+
+            <a class="nav-item" href="{{ url_for('topic_quiz') }}">
+                <span>☷</span> Topic Quiz
+            </a>
+
+            <div class="nav-item"><span>▦</span> Revision Planner</div>
+            <div class="nav-item ai-nav"><span>✦</span> Ask Campus AI</div>
+            <div class="nav-item"><span>◴</span> Study Timer</div>
+            <a class="nav-item" href="{{ url_for('upload_page') }}">
+                <span>▱</span> My Library
+            </a>
+            <div class="nav-item"><span>⚙</span> Settings</div>
+        </nav>
+
+        {% if session.get("user_id") %}
+        <form method="POST"
+              action="{{ url_for('logout') }}"
+              class="sidebar-logout-form">
+            <button type="submit" class="sidebar-logout-button">
+                <span>↪</span>
+                <span>Logout</span>
+            </button>
+        </form>
+        {% endif %}
+
+        <div class="sidebar-footer">
+            <div class="campus-drawing">🏛️</div>
+            <p>Smarter Learning<br>Brighter Future</p>
+
+            <div class="university">
+                <span>🎓</span>
+                <div>
+                    <strong>Mewar University</strong>
+                    <small>Learn · Grow · Achieve</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="search-box">
+                <span>⌕</span>
+                <input
+                    id="dashboardSearch"
+                    type="search"
+                    placeholder="Search files, topics, or ask a question..."
+                    aria-label="Search files and topics"
+                >
+                <kbd>Ctrl + K</kbd>
+            </div>
+
+            {% if session.get("user_id") %}
+            <div class="profile">
+                <div class="avatar"
+                     title="{{ session.get('user_name') or 'Student' }}">
+                    {{ (session.get("user_name") or "S")[0]|upper }}
+                </div>
+
+                <div class="profile-info">
+                    <strong>{{ session.get("user_name") or "Student" }}</strong>
+                    <small>{{ session.get("user_email") or "Email not available" }}</small>
+                </div>
+            </div>
+            {% else %}
+            <div class="auth-buttons">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+            </div>
+            {% endif %}
+        </header>
+
+        <section class="hero">
+            <div class="hero-content">
+                <span class="tag">✦ Mewar Campus IQ</span>
+
+                <h1>
+                    Your next breakthrough<br>
+                    <span>starts here.</span>
+                </h1>
+
+                <p>Your study space, organized around you.</p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="{{ url_for('upload_page') }}">
+                        ☁ &nbsp; Upload study material →
+                    </a>
+
+                    <a class="btn btn-outline" href="#quick-actions">
+                        ◎ &nbsp; Explore topics
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-art">
+                <span class="bubble bubble-one">📘</span>
+                <span class="bubble bubble-two">🧠</span>
+                <span class="bubble bubble-three">🎓</span>
+                <div class="hero-book">📖</div>
+                <div class="hero-slogan">
+                    Better Notes<br>
+                    Smarter Learning<br>
+                    Bigger Dreams
+                </div>
+            </div>
+        </section>
+
+        <section id="quick-actions" class="dashboard-section">
+            <div class="section-title">
+                <h2><span>ϟ</span> Quick Actions</h2>
+                <p>Jump into what you need, faster.</p>
+            </div>
+
+            <div class="quick-grid">
+                <a href="#study-library" class="quick-card blue">
+                    <div class="card-icon">▤</div>
+                    <div>
+                        <h3>Continue Reading</h3>
+                        <p>Pick up where you left off with your study material.</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('topic_quiz') }}" class="quick-card purple">
+                    <div class="card-icon">☷</div>
+                    <div>
+                        <h3>Topic Quiz</h3>
+                        <p>Test your knowledge with AI-powered quizzes.</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('coverage_page') }}" class="quick-card green">
+                    <div class="card-icon">▣</div>
+                    <div>
+                        <h3>Coverage Analysis</h3>
+                        <p>See what's covered, missing and needs attention.</p>
+                    </div>
+                </a>
+
+                <a href="#study-library" class="quick-card orange">
+                    <div class="card-icon">◷</div>
+                    <div>
+                        <h3>Focus Session</h3>
+                        <p>Stay consistent with your study routine.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <div class="dashboard-columns">
+
+            <section class="panel" id="study-library">
+                <div class="panel-heading">
+                    <div>
+                        <h2>▤ &nbsp; Pick up where you left off</h2>
+                        <p>
+                            {% if document_count %}
+                                You have {{ document_count }} study material{{ '' if document_count == 1 else 's' }} in your library.
+                            {% else %}
+                                Your study materials will appear here.
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <a href="{{ url_for('upload_page') }}">Upload files →</a>
+                </div>
+
+                {% if recent_documents %}
+                    <div class="document-list">
+                        <span class="library-icon">📂</span>
+                        <h3>Your recent study materials</h3>
+
+                        {% for document in recent_documents %}
+                            <div class="document-item">
+                                <span class="file-icon">📄</span>
+                                <strong class="file-name">{{ document['filename'] }}</strong>
+                                <small class="file-meta">
+                                    {{ document['extension']|upper }}
+                                    · {{ document['uploaded_at'].strftime('%d %b %Y') if document['uploaded_at'] else '' }}
+                                </small>
+                            </div>
+                        {% endfor %}
+
+                        <a href="{{ url_for('upload_page') }}"
+                           class="btn btn-primary upload-more">
+                            Upload more study material
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="empty-files">
+                        <span>📂</span>
+                        <h3>Your study library</h3>
+                        <p>Upload a PDF, document, or image to get started.</p>
+
+                        <a href="{{ url_for('upload_page') }}" class="btn btn-primary">
+                            Upload study material
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>✧ &nbsp; Your study space</h2>
+                        <p>Your learning dashboard at a glance.</p>
+                    </div>
+                </div>
+
+                <div class="widget-grid">
+                    <div class="widget blue">
+                        <span>📘</span>
+                        <div>
+                            <h3>Recent Topics</h3>
+                            <p>Return to your learning.</p>
+                        </div>
+                    </div>
+
+                    <div class="widget purple">
+                        <span>✦</span>
+                        <div>
+                            <h3>AI Study Assistant</h3>
+                            <p>Ask about your uploaded file.</p>
+                        </div>
+                    </div>
+
+                    <div class="widget green">
+                        <span>▦</span>
+                        <div>
+                            <h3>Today's Plan</h3>
+                            <p>Organize your revision.</p>
+                        </div>
+                    </div>
+
+                    <div class="widget orange">
+                        <span>▱</span>
+                        <div>
+                            <h3>Saved Resources</h3>
+                            <p>Keep your notes together.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="motivation">
+                    <span>🎓</span>
+                    <div>
+                        <strong>Stay consistent, stay ahead!</strong>
+                        <p>Small steps every day lead to big results.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer>Mewar Campus IQ · Learn smarter, every day.</footer>
+
+    </main>
+</div>
+
+<script>
+const dashboardSearch = document.getElementById("dashboardSearch");
+
+dashboardSearch.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && this.value.trim()) {
+        const query = this.value.trim();
+        window.location.href =
+            "{{ url_for('upload_page') }}" + "?search=" + encodeURIComponent(query);
+    }
+});
+
+document.addEventListener("keydown", function (event) {
+    if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "k"
+    ) {
+        event.preventDefault();
+        dashboardSearch.focus();
+    }
+});
+</script>
+
+</body>
+</html>

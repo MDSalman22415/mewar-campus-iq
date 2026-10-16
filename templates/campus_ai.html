@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ask Campus AI | Mewar Campus IQ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .ai-chat-page {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 80px);
+            max-width: 950px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px;
+            box-sizing: border-box;
+        }
+
+        .ai-heading {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .ai-heading h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .ai-heading p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .ai-suggestions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .ai-suggestion {
+            padding: 17px;
+            text-align: left;
+            font-family: inherit;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            cursor: pointer;
+            color: #334155;
+        }
+
+        .ai-suggestion:hover {
+            border-color: #93b4ff;
+            background: #f8faff;
+        }
+
+        .ai-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .ai-message {
+            padding: 14px 17px;
+            border-radius: 14px;
+            max-width: 85%;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .ai-message.user {
+            align-self: flex-end;
+            background: #2563eb;
+            color: white;
+        }
+
+        .ai-message.bot {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        .ai-composer {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            background: white;
+            border: 1px solid #dbe3ef;
+            border-radius: 16px;
+            padding: 12px;
+            margin-top: auto;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .ai-composer textarea {
+            flex: 1;
+            min-width: 0;
+            min-height: 48px;
+            max-height: 160px;
+            resize: vertical;
+            border: none;
+            outline: none;
+            padding: 12px;
+            font: inherit;
+            background: transparent;
+        }
+
+        .ai-send {
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-family: inherit;
+            font-weight: 600;
+            padding: 14px 20px;
+            cursor: pointer;
+        }
+
+        .ai-send:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .ai-note {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .ai-chat-page {
+                padding: 16px;
+            }
+
+            .ai-heading h1 {
+                font-size: 24px;
+            }
+
+            .ai-suggestions {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+    <!-- SAME SIDEBAR AS THE EXISTING HOME PAGE -->
+    <aside class="sidebar">
+        <a href="{{ url_for('dashboard') }}" class="brand">
+            <span class="brand-icon">🎓</span>
+            <span>
+                <strong>Mewar Campus IQ</strong>
+                <small>AI-Powered Study Companion</small>
+            </span>
+        </a>
+
+        <nav class="navigation">
+            <a class="nav-item" href="{{ url_for('dashboard') }}">
+                <span>⌂</span> Home
+            </a>
+
+            <a class="nav-item" href="{{ url_for('upload_page') }}">
+                <span>☁</span> Upload & Analyze
+            </a>
+
+            <a class="nav-item" href="{{ url_for('coverage_page') }}">
+                <span>▤</span> Coverage Analysis
+            </a>
+
+            <a class="nav-item" href="{{ url_for('topic_quiz') }}">
+                <span>☷</span> Topic Quiz
+            </a>
+
+            <div class="nav-item"><span>▦</span> Revision Planner</div>
+
+            <a class="nav-item ai-nav active" href="{{ url_for('campus_ai') }}">
+                <span>✦</span> Ask Campus AI
+            </a>
+
+            <div class="nav-item"><span>◴</span> Study Timer</div>
+
+            <a class="nav-item" href="{{ url_for('upload_page') }}">
+                <span>▱</span> My Library
+            </a>
+
+            <div class="nav-item"><span>⚙</span> Settings</div>
+        </nav>
+
+        {% if session.get("user_id") %}
+        <form method="POST"
+              action="{{ url_for('logout') }}"
+              class="sidebar-logout-form">
+            <button type="submit" class="sidebar-logout-button">
+                <span>↪</span>
+                <span>Logout</span>
+            </button>
+        </form>
+        {% endif %}
+
+        <div class="sidebar-footer">
+            <div class="campus-drawing">🏛️</div>
+            <p>Smarter Learning<br>Brighter Future</p>
+
+            <div class="university">
+                <span>🎓</span>
+                <div>
+                    <strong>Mewar University</strong>
+                    <small>Learn · Grow · Achieve</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ONLY THE MAIN CONTENT IS NEW -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <strong>✦ Ask Campus AI</strong>
+                <p style="margin:5px 0 0;color:#64748b;font-size:13px;">
+                    Your general-purpose AI assistant
+                </p>
+            </div>
+
+            {% if session.get("user_id") %}
+            <div class="profile">
+                <div class="avatar">
+                    {{ (session.get("user_name") or "S")[0]|upper }}
+                </div>
+                <div class="profile-info">
+                    <strong>{{ session.get("user_name") or "Student" }}</strong>
+                    <small>{{ session.get("user_email") or "Email not available" }}</small>
+                </div>
+            </div>
+            {% endif %}
+        </header>
+
+        <section class="ai-chat-page">
+
+            <div class="ai-heading" id="aiWelcome">
+                <h1>How can I help you today?</h1>
+                <p>
+                    Ask about programming, academics, careers or anything else.
+                    English or Hinglish — your choice.
+                </p>
+
+                <div class="ai-suggestions">
+                    <button type="button" class="ai-suggestion"
+                        data-question="Explain Python lists in simple Hinglish.">
+                        <strong>💻 Learn programming</strong><br>
+                        Explain Python lists in simple Hinglish.
+                    </button>
+
+                    <button type="button" class="ai-suggestion"
+                        data-question="Help me create a productive study timetable.">
+                        <strong>📚 Study planning</strong><br>
+                        Create a productive study timetable.
+                    </button>
+
+                    <button type="button" class="ai-suggestion"
+                        data-question="What is machine learning? Explain with an example.">
+                        <strong>🧠 Understand AI</strong><br>
+                        Learn machine learning with an example.
+                    </button>
+
+                    <button type="button" class="ai-suggestion"
+                        data-question="How should a BCA student prepare for an internship?">
+                        <strong>🚀 Career guidance</strong><br>
+                        Prepare for a technical internship.
+                    </button>
+                </div>
+            </div>
+
+            <div class="ai-messages" id="aiMessages"></div>
+
+            <form class="ai-composer" id="aiChatForm">
+                <textarea id="aiQuestion"
+                    maxlength="2000"
+                    placeholder="Message Campus AI..."
+                    aria-label="Your question"
+                    required></textarea>
+
+                <button class="ai-send" id="aiSendButton" type="submit">
+                    Send ↑
+                </button>
+            </form>
+
+            <p class="ai-note">
+                AI-generated responses may contain mistakes.
+            </p>
+        </section>
+
+    </main>
+</div>
+
+<script>
+const aiForm = document.getElementById("aiChatForm");
+const aiInput = document.getElementById("aiQuestion");
+const aiMessages = document.getElementById("aiMessages");
+const aiSendButton = document.getElementById("aiSendButton");
+const aiWelcome = document.getElementById("aiWelcome");
+
+function addAIMessage(text, type) {
+    const message = document.createElement("div");
+    message.className = "ai-message " + type;
+    message.textContent = text;
+    aiMessages.appendChild(message);
+    message.scrollIntoView({ behavior: "smooth", block: "end" });
+    return message;
+}
+
+async function askCampusAI(question) {
+    question = question.trim();
+
+    if (!question || aiSendButton.disabled) return;
+
+    aiWelcome.style.display = "none";
+    addAIMessage(question, "user");
+
+    aiInput.value = "";
+    aiSendButton.disabled = true;
+    aiSendButton.textContent = "Thinking...";
+
+    const loading = addAIMessage("Campus AI is preparing your answer...", "bot");
+
+    try {
+        const response = await fetch("/api/campus-ai/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question: question })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            loading.textContent =
+                data.error || "Sorry, the AI could not answer. Please try again.";
+        } else {
+            loading.textContent = data.answer;
+        }
+    } catch (error) {
+        loading.textContent =
+            "Unable to connect to Campus AI. Please check your connection and try again.";
+    } finally {
+        aiSendButton.disabled = false;
+        aiSendButton.textContent = "Send ↑";
+        aiInput.focus();
+    }
+}
+
+aiForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    askCampusAI(aiInput.value);
+});
+
+document.querySelectorAll(".ai-suggestion").forEach(function(button) {
+    button.addEventListener("click", function() {
+        askCampusAI(button.dataset.question);
+    });
+});
+
+aiInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        aiForm.requestSubmit();
+    }
+});
+</script>
+
+</body>
+</html>
