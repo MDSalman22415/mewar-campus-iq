@@ -1,0 +1,461 @@
+
+{% extends "base.html" %}
+
+{% block title %}Topic Quiz | Mewar Campus IQ{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <a href="/" class="brand">
+            <span class="brand-icon">🎓</span>
+            <span>
+                <strong>Mewar Campus IQ</strong>
+                <small>AI-Powered Study Companion</small>
+            </span>
+        </a>
+
+        <nav class="navigation">
+            <a class="nav-item" href="/">⌂ &nbsp; Home</a>
+            <a class="nav-item" href="/upload">⇧ &nbsp; Upload & Analyze</a>
+            <a class="nav-item" href="/coverage">▤ &nbsp; Coverage Analysis</a>
+            <a class="nav-item active" href="{{ url_for('topic_quiz') }}">☷ &nbsp; Topic Quiz</a>
+            <div class="nav-item">▦ &nbsp; Revision Planner</div>
+            <div class="nav-item ai-nav">✦ &nbsp; Ask Campus AI</div>
+            <div class="nav-item">◴ &nbsp; Study Timer</div>
+            <div class="nav-item">▱ &nbsp; My Library</div>
+            <div class="nav-item">⚙ &nbsp; Settings</div>
+        </nav>
+
+        {% if session.get("user_id") %}
+        <form method="POST" action="{{ url_for('logout') }}"
+              class="sidebar-logout-form">
+            <button type="submit" class="sidebar-logout-button">
+                <span>↪</span><span>Logout</span>
+            </button>
+        </form>
+        {% endif %}
+
+        <div class="sidebar-footer">
+            <div class="campus-drawing">🏫</div>
+            <p>Smarter Learning<br>Brighter Future</p>
+            <div class="university">
+                <span>🎓</span>
+                <div>
+                    <strong>Mewar University</strong>
+                    <small>Learn · Grow · Achieve</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        {% if session.get("user_id") %}
+        {% set display_name = session.get("user_name") or session.get("name") or (session.get("user_email", "").split("@")[0] if session.get("user_email") else "Student") %}
+        {% set display_email = session.get("user_email") or session.get("email") or "" %}
+
+        <div class="coverage-user">
+            <div class="user-avatar">
+                {{ display_name[0]|upper if display_name else "S" }}
+            </div>
+            <div class="user-details">
+                <strong>{{ display_name }}</strong>
+                <small>{{ display_email or "Email not available" }}</small>
+            </div>
+        </div>
+        {% endif %}
+
+<style>
+.topic-quiz{max-width:1100px;margin:auto;padding:24px;color:var(--text-color,#172033)}
+.tq-heading{margin-bottom:24px}
+.tq-heading h1{margin:0 0 8px;font-size:28px}
+.tq-heading p,.tq-muted{color:#64748b}
+.tq-card{background:var(--card-bg,#fff);border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:20px}
+.tq-card h2{font-size:18px;margin:0 0 18px}
+.tq-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.tq-field label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+.tq-field select,.tq-field input[type=text]{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#172033;font-size:14px}
+.tq-count-options{display:flex;gap:12px;flex-wrap:wrap}
+.tq-count{position:relative}
+.tq-count input{position:absolute;opacity:0}
+.tq-count span{display:inline-block;min-width:40px;padding:11px 18px;text-align:center;border:1px solid #cbd5e1;border-radius:9px;cursor:pointer;font-weight:600}
+.tq-count input:checked+span{background:#eef2ff;border-color:#4f46e5;color:#4338ca}
+.tq-primary{border:0;border-radius:9px;background:#4f46e5;color:white;padding:13px 20px;font-weight:600;cursor:pointer}
+.tq-primary:hover{background:#4338ca}
+.tq-primary:disabled{opacity:.6;cursor:wait}
+.tq-muted{font-size:13px}
+.tq-hidden{display:none!important}
+.tq-progress{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:12px 0 22px}
+.tq-progress-bar{width:0;height:100%;background:#4f46e5;transition:width .2s}
+.tq-question{font-size:19px;line-height:1.5;font-weight:650;margin-bottom:18px}
+.tq-option{display:flex;align-items:flex-start;gap:10px;padding:13px;margin:10px 0;border:1px solid #dbe2ea;border-radius:10px;cursor:pointer}
+.tq-option:hover{background:#f8fafc}
+.tq-option input{margin-top:4px}
+.tq-option:has(input:checked){border-color:#4f46e5;background:#eef2ff}
+.tq-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+.tq-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}
+.tq-stat{padding:18px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}
+.tq-stat strong{display:block;font-size:26px;margin-bottom:5px}
+.tq-stat span{font-size:13px;color:#64748b}
+.tq-error{color:#b91c1c;font-size:14px;margin-top:12px;white-space:pre-wrap}
+.tq-report{line-height:1.7;overflow-wrap:anywhere}
+.tq-report h3{margin-top:20px}
+.tq-report ul{padding-left:22px}
+.coverage-user{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin:20px 28px 0}
+.user-avatar{width:42px;height:42px;min-width:42px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#eef2ff;color:#4338ca;font-weight:700;font-size:17px}
+.user-details{display:flex;flex-direction:column;gap:4px}
+.user-details strong{color:#172033;font-size:14px}
+.user-details small{color:#64748b;font-size:12px}
+@media(max-width:650px){.topic-quiz{padding:16px}.tq-form-grid,.tq-stats{grid-template-columns:1fr}.tq-card{padding:18px}.tq-heading h1{font-size:23px}.coverage-user{margin:16px}}
+</style>
+
+<div class="topic-quiz">
+    <div class="tq-heading">
+        <h1>📝 AI Topic Quiz & Report</h1>
+        <p>Select your uploaded study material. Gemini will generate questions from the selected document.</p>
+    </div>
+
+    <section class="tq-card" id="tqSetup">
+        <h2>Configure your quiz</h2>
+
+        <div class="tq-form-grid">
+            <div class="tq-field">
+                <label for="tqPdf">Select uploaded document</label>
+                <select id="tqPdf">
+                    <option value="">Loading your documents...</option>
+                </select>
+                <p class="tq-muted">Choose a document that has readable extracted text.</p>
+            </div>
+
+            <div class="tq-field">
+                <label for="tqTopic">Topic (optional)</label>
+                <input type="text" id="tqTopic"
+                       placeholder="All topics from the document">
+                <p class="tq-muted">Leave blank to cover the whole document.</p>
+            </div>
+
+            <div class="tq-field">
+                <label>Number of questions</label>
+                <div class="tq-count-options">
+                    <label class="tq-count">
+                        <input type="radio" name="tqCount" value="10" checked>
+                        <span>10</span>
+                    </label>
+                    <label class="tq-count">
+                        <input type="radio" name="tqCount" value="20">
+                        <span>20</span>
+                    </label>
+                    <label class="tq-count">
+                        <input type="radio" name="tqCount" value="30">
+                        <span>30</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <p id="tqSetupError" class="tq-error tq-hidden"></p>
+
+        <div class="tq-actions">
+            <button type="button" class="tq-primary" id="tqGenerate">
+                Generate AI Quiz →
+            </button>
+            <button type="button" class="tq-primary" id="tqGenerateReport">
+                Generate AI Report
+            </button>
+        </div>
+    </section>
+
+    <section class="tq-card tq-hidden" id="tqQuiz">
+        <div class="tq-muted" id="tqQuestionCounter">Question 1</div>
+        <div class="tq-progress">
+            <div class="tq-progress-bar" id="tqProgressBar"></div>
+        </div>
+
+        <div class="tq-question" id="tqQuestionText"></div>
+        <div id="tqOptions"></div>
+        <p id="tqAnswerError" class="tq-error tq-hidden"></p>
+
+        <div class="tq-actions">
+            <button type="button" id="tqQuit" class="tq-primary"
+                    style="background:#64748b">Back</button>
+            <button type="button" id="tqNext" class="tq-primary">
+                Next Question →
+            </button>
+        </div>
+    </section>
+
+    <section class="tq-card tq-hidden" id="tqResults">
+        <h2>Quiz Completed 🎉</h2>
+        <p class="tq-muted" id="tqResultMessage">Your performance</p>
+
+        <div class="tq-stats">
+            <div class="tq-stat"><strong id="tqCorrect">0</strong><span>Correct answers</span></div>
+            <div class="tq-stat"><strong id="tqIncorrect">0</strong><span>Incorrect answers</span></div>
+            <div class="tq-stat"><strong id="tqAccuracy">0%</strong><span>Overall accuracy</span></div>
+        </div>
+
+        <button type="button" class="tq-primary" id="tqRetry">
+            Create Another Quiz
+        </button>
+    </section>
+
+    <section class="tq-card tq-hidden" id="tqReportCard">
+        <h2>📄 AI Study Report</h2>
+        <p id="tqReportStatus" class="tq-muted"></p>
+        <div id="tqReport" class="tq-report"></div>
+        <button type="button" class="tq-primary" id="tqReportRetry">
+            Back to Documents
+        </button>
+    </section>
+</div>
+
+<script>
+(() => {
+    const $ = id => document.getElementById(id);
+
+    let questions = [];
+    let current = 0;
+    let answers = [];
+
+    const show = id => $(id).classList.remove("tq-hidden");
+    const hide = id => $(id).classList.add("tq-hidden");
+
+    async function loadDocuments() {
+        const select = $("tqPdf");
+
+        try {
+            const response = await fetch("/api/coverage/files");
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || "Unable to load uploaded documents.");
+            }
+
+            select.replaceChildren();
+
+            const first = document.createElement("option");
+            first.value = "";
+            first.textContent = "Select an uploaded document";
+            select.appendChild(first);
+
+            (data.files || []).forEach(file => {
+                const option = document.createElement("option");
+                option.value = file.id;
+                option.textContent = file.name;
+                select.appendChild(option);
+            });
+
+            if (!data.files || data.files.length === 0) {
+                first.textContent = "No uploaded documents found";
+            }
+        } catch (error) {
+            select.replaceChildren();
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Could not load documents";
+            select.appendChild(option);
+            $("tqSetupError").textContent = error.message;
+            show("tqSetupError");
+        }
+    }
+
+    function renderQuestion() {
+        const q = questions[current];
+
+        $("tqQuestionCounter").textContent =
+            `Question ${current + 1} of ${questions.length}`;
+
+        $("tqProgressBar").style.width =
+            `${((current + 1) / questions.length) * 100}%`;
+
+        $("tqQuestionText").textContent = q.question;
+        $("tqOptions").replaceChildren();
+        hide("tqAnswerError");
+
+        q.options.forEach((option, index) => {
+            const label = document.createElement("label");
+            label.className = "tq-option";
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "tqAnswer";
+            radio.value = index;
+            radio.checked = answers[current] === index;
+
+            const text = document.createElement("span");
+            text.textContent = option;
+
+            label.append(radio, text);
+            $("tqOptions").appendChild(label);
+        });
+
+        $("tqNext").textContent =
+            current === questions.length - 1
+                ? "Submit Quiz ✓"
+                : "Next Question →";
+    }
+
+    $("tqGenerate").addEventListener("click", async () => {
+        hide("tqSetupError");
+
+        const documentId = $("tqPdf").value;
+        if (!documentId) {
+            $("tqSetupError").textContent = "Please select an uploaded document first.";
+            show("tqSetupError");
+            return;
+        }
+
+        const count = Number(
+            document.querySelector('input[name="tqCount"]:checked').value
+        );
+        const topic = $("tqTopic").value.trim() || "all";
+        const button = $("tqGenerate");
+        const oldText = button.textContent;
+
+        button.disabled = true;
+        button.textContent = "Gemini is generating questions...";
+
+        try {
+            const response = await fetch("/api/quiz/generate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    document_id: documentId,
+                    topic: topic,
+                    count: count
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Quiz generation failed.");
+            }
+
+            if (!Array.isArray(data.questions) || !data.questions.length) {
+                throw new Error("Gemini returned no valid questions. Please try again.");
+            }
+
+            questions = data.questions;
+            current = 0;
+            answers = Array(questions.length).fill(null);
+
+            hide("tqSetup");
+            hide("tqResults");
+            hide("tqReportCard");
+            show("tqQuiz");
+            renderQuestion();
+
+        } catch (error) {
+            $("tqSetupError").textContent = error.message;
+            show("tqSetupError");
+        } finally {
+            button.disabled = false;
+            button.textContent = oldText;
+        }
+    });
+
+    $("tqNext").addEventListener("click", () => {
+        const selected = document.querySelector('input[name="tqAnswer"]:checked');
+
+        if (!selected) {
+            $("tqAnswerError").textContent = "Please select an answer to continue.";
+            show("tqAnswerError");
+            return;
+        }
+
+        answers[current] = Number(selected.value);
+
+        if (current < questions.length - 1) {
+            current++;
+            renderQuestion();
+            return;
+        }
+
+        const correct = questions.reduce(
+            (total, q, i) => total + (answers[i] === q.answer ? 1 : 0), 0
+        );
+        const incorrect = questions.length - correct;
+        const accuracy = Math.round(correct / questions.length * 100);
+
+        $("tqCorrect").textContent = correct;
+        $("tqIncorrect").textContent = incorrect;
+        $("tqAccuracy").textContent = `${accuracy}%`;
+        $("tqResultMessage").textContent =
+            `You answered ${questions.length} questions. Accuracy: ${accuracy}%.`;
+
+        hide("tqQuiz");
+        show("tqResults");
+    });
+
+    $("tqQuit").addEventListener("click", () => {
+        hide("tqQuiz");
+        show("tqSetup");
+    });
+
+    $("tqRetry").addEventListener("click", () => {
+        hide("tqResults");
+        show("tqSetup");
+    });
+
+    $("tqGenerateReport").addEventListener("click", async () => {
+        hide("tqSetupError");
+
+        const documentId = $("tqPdf").value;
+        if (!documentId) {
+            $("tqSetupError").textContent = "Please select an uploaded document first.";
+            show("tqSetupError");
+            return;
+        }
+
+        const button = $("tqGenerateReport");
+        const oldText = button.textContent;
+        button.disabled = true;
+        button.textContent = "Generating report...";
+
+        try {
+            const response = await fetch("/api/report/generate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({document_id: documentId})
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Report generation failed.");
+            }
+
+            $("tqReport").textContent = data.report || data.text || "";
+            if (! $("tqReport").textContent) {
+                throw new Error("The server returned an empty report.");
+            }
+
+            $("tqReportStatus").textContent =
+                "Generated from: " + ($("tqPdf").selectedOptions[0]?.textContent || "Selected document");
+
+            hide("tqSetup");
+            hide("tqQuiz");
+            hide("tqResults");
+            show("tqReportCard");
+
+        } catch (error) {
+            $("tqSetupError").textContent =
+                error.message + " Ensure the /api/report/generate backend route is implemented.";
+            show("tqSetupError");
+        } finally {
+            button.disabled = false;
+            button.textContent = oldText;
+        }
+    });
+
+    $("tqReportRetry").addEventListener("click", () => {
+        hide("tqReportCard");
+        show("tqSetup");
+    });
+
+    loadDocuments();
+})();
+</script>
+    </div>
+</div>
+{% endblock %}

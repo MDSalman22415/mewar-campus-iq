@@ -1,0 +1,484 @@
+
+{% extends "base.html" %}
+
+{% block title %}Topic Quiz | Mewar Campus IQ{% endblock %}
+
+{% block content %}
+<style>
+/* Topic Quiz only — existing sidebar/navigation untouched */
+.topic-quiz {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+    color: var(--text-color, #172033);
+}
+
+.tq-heading {
+    margin-bottom: 24px;
+}
+
+.tq-heading h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+.tq-heading p {
+    color: #64748b;
+    margin: 0;
+}
+
+.tq-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.tq-card h2 {
+    font-size: 18px;
+    margin: 0 0 18px;
+}
+
+.tq-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.tq-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.tq-field select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: #fff;
+    color: #172033;
+    font-size: 14px;
+}
+
+.tq-count-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.tq-count {
+    position: relative;
+}
+
+.tq-count input {
+    position: absolute;
+    opacity: 0;
+}
+
+.tq-count span {
+    display: inline-block;
+    min-width: 68px;
+    padding: 11px 18px;
+    text-align: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.tq-count input:checked + span {
+    background: #eef2ff;
+    border-color: #4f46e5;
+    color: #4338ca;
+}
+
+.tq-primary {
+    border: 0;
+    border-radius: 9px;
+    background: #4f46e5;
+    color: #fff;
+    padding: 13px 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tq-primary:hover {
+    background: #4338ca;
+}
+
+.tq-muted {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.tq-hidden {
+    display: none !important;
+}
+
+.tq-progress {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 12px 0 22px;
+}
+
+.tq-progress-bar {
+    width: 0;
+    height: 100%;
+    background: #4f46e5;
+    transition: width .2s;
+}
+
+.tq-question {
+    font-size: 19px;
+    line-height: 1.5;
+    font-weight: 650;
+    margin-bottom: 18px;
+}
+
+.tq-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px;
+    margin: 10px 0;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.tq-option:hover {
+    background: #f8fafc;
+}
+
+.tq-option input {
+    margin-top: 4px;
+}
+
+.tq-option:has(input:checked) {
+    border-color: #4f46e5;
+    background: #eef2ff;
+}
+
+.tq-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.tq-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+}
+
+.tq-stat {
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.tq-stat strong {
+    display: block;
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.tq-stat span {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.tq-error {
+    color: #b91c1c;
+    font-size: 14px;
+    margin-top: 12px;
+}
+
+@media (max-width: 650px) {
+    .topic-quiz { padding: 16px; }
+    .tq-form-grid, .tq-stats { grid-template-columns: 1fr; }
+    .tq-card { padding: 18px; }
+    .tq-heading h1 { font-size: 23px; }
+}
+</style>
+
+<div class="topic-quiz">
+    <div class="tq-heading">
+        <h1>📝 Topic Quiz</h1>
+        <p>Test your understanding of topics from your study material.</p>
+    </div>
+
+    <!-- Setup screen -->
+    <section class="tq-card" id="tqSetup">
+        <h2>Configure your quiz</h2>
+
+        <div class="tq-form-grid">
+            <div class="tq-field">
+                <label for="tqPdf">Select uploaded PDF</label>
+                <select id="tqPdf">
+                    <option value="">Select a PDF</option>
+                    <option value="demo-python">Python Notes.pdf (Demo)</option>
+                    <option value="demo-ml">Machine Learning.pdf (Demo)</option>
+                </select>
+                <p class="tq-muted">Demo files for frontend testing only.</p>
+            </div>
+
+            <div class="tq-field">
+                <label for="tqTopic">Select topic</label>
+                <select id="tqTopic">
+                    <option value="all">All topics</option>
+                    <option value="variables">Variables & Data Types</option>
+                    <option value="conditions">Conditional Statements</option>
+                    <option value="loops">Loops</option>
+                </select>
+            </div>
+
+            <div class="tq-field">
+                <label>Number of questions</label>
+                <div class="tq-count-options">
+                    <label class="tq-count">
+                        <input type="radio" name="tqCount" value="10" checked>
+                        <span>10</span>
+                    </label>
+                    <label class="tq-count">
+                        <input type="radio" name="tqCount" value="20">
+                        <span>20</span>
+                    </label>
+                    <label class="tq-count">
+                        <input type="radio" name="tqCount" value="30">
+                        <span>30</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <p id="tqSetupError" class="tq-error tq-hidden"></p>
+        <button type="button" class="tq-primary" id="tqGenerate">
+            Generate Questions →
+        </button>
+    </section>
+
+    <!-- Question screen -->
+    <section class="tq-card tq-hidden" id="tqQuiz">
+        <div class="tq-muted" id="tqQuestionCounter">Question 1</div>
+        <div class="tq-progress">
+            <div class="tq-progress-bar" id="tqProgressBar"></div>
+        </div>
+
+        <div class="tq-question" id="tqQuestionText"></div>
+        <div id="tqOptions"></div>
+        <p id="tqAnswerError" class="tq-error tq-hidden"></p>
+
+        <div class="tq-actions">
+            <button type="button" id="tqQuit" class="tq-primary"
+                    style="background:#64748b;">
+                Back
+            </button>
+            <button type="button" id="tqNext" class="tq-primary">
+                Next Question →
+            </button>
+        </div>
+    </section>
+
+    <!-- Results screen -->
+    <section class="tq-card tq-hidden" id="tqResults">
+        <h2>Quiz Completed 🎉</h2>
+        <p class="tq-muted" id="tqResultMessage">Here is your performance.</p>
+
+        <div class="tq-stats">
+            <div class="tq-stat">
+                <strong id="tqCorrect">0</strong>
+                <span>Correct answers</span>
+            </div>
+            <div class="tq-stat">
+                <strong id="tqIncorrect">0</strong>
+                <span>Incorrect answers</span>
+            </div>
+            <div class="tq-stat">
+                <strong id="tqAccuracy">0%</strong>
+                <span>Overall accuracy</span>
+            </div>
+        </div>
+
+        <button type="button" class="tq-primary" id="tqRetry">
+            Create Another Quiz
+        </button>
+    </section>
+</div>
+
+<script>
+(() => {
+    const $ = id => document.getElementById(id);
+
+    const demoQuestions = [
+        {
+            topic: "variables",
+            question: "Which symbol is used to assign a value to a variable in Python?",
+            options: ["==", "=", "!=", "->"],
+            answer: 1
+        },
+        {
+            topic: "variables",
+            question: "Which of these is a Python numeric data type?",
+            options: ["int", "loop", "define", "repeat"],
+            answer: 0
+        },
+        {
+            topic: "conditions",
+            question: "Which keyword checks a condition in Python?",
+            options: ["for", "if", "def", "import"],
+            answer: 1
+        },
+        {
+            topic: "loops",
+            question: "Which loop iterates over items in a sequence?",
+            options: ["if", "else", "for", "try"],
+            answer: 2
+        },
+        {
+            topic: "loops",
+            question: "What does break do inside a loop?",
+            options: [
+                "Restarts the program",
+                "Exits the loop",
+                "Skips every function",
+                "Creates a variable"
+            ],
+            answer: 1
+        }
+    ];
+
+    let questions = [];
+    let current = 0;
+    let answers = [];
+
+    const show = id => $(id).classList.remove("tq-hidden");
+    const hide = id => $(id).classList.add("tq-hidden");
+
+    function renderQuestion() {
+        const q = questions[current];
+
+        $("tqQuestionCounter").textContent =
+            `Question ${current + 1} of ${questions.length}`;
+
+        $("tqProgressBar").style.width =
+            `${((current + 1) / questions.length) * 100}%`;
+
+        $("tqQuestionText").textContent = q.question;
+        $("tqOptions").replaceChildren();
+        hide("tqAnswerError");
+
+        q.options.forEach((option, index) => {
+            const label = document.createElement("label");
+            label.className = "tq-option";
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "tqAnswer";
+            radio.value = index;
+            radio.checked = answers[current] === index;
+
+            const text = document.createElement("span");
+            text.textContent = option;
+
+            label.append(radio, text);
+            $("tqOptions").appendChild(label);
+        });
+
+        $("tqNext").textContent =
+            current === questions.length - 1 ? "Submit Quiz ✓" : "Next Question →";
+    }
+
+    $("tqGenerate").addEventListener("click", () => {
+        hide("tqSetupError");
+
+        if (!$("tqPdf").value) {
+            $("tqSetupError").textContent = "Please select a PDF first.";
+            show("tqSetupError");
+            return;
+        }
+
+        const topic = $("tqTopic").value;
+        const count = Number(
+            document.querySelector('input[name="tqCount"]:checked').value
+        );
+
+        const filtered = topic === "all"
+            ? demoQuestions
+            : demoQuestions.filter(q => q.topic === topic);
+
+        if (!filtered.length) {
+            $("tqSetupError").textContent =
+                "No demo questions are available for this topic yet.";
+            show("tqSetupError");
+            return;
+        }
+
+        // Demo only: repeat sample questions to test 10/20/30-question UI.
+        questions = Array.from({ length: count }, (_, i) =>
+            ({ ...filtered[i % filtered.length] })
+        );
+
+        current = 0;
+        answers = Array(count).fill(null);
+
+        hide("tqSetup");
+        hide("tqResults");
+        show("tqQuiz");
+        renderQuestion();
+    });
+
+    $("tqNext").addEventListener("click", () => {
+        const selected = document.querySelector('input[name="tqAnswer"]:checked');
+
+        if (!selected) {
+            $("tqAnswerError").textContent = "Please select an answer to continue.";
+            show("tqAnswerError");
+            return;
+        }
+
+        answers[current] = Number(selected.value);
+
+        if (current < questions.length - 1) {
+            current++;
+            renderQuestion();
+            return;
+        }
+
+        const correct = questions.reduce(
+            (total, q, i) => total + (answers[i] === q.answer ? 1 : 0), 0
+        );
+        const incorrect = questions.length - correct;
+        const accuracy = Math.round((correct / questions.length) * 100);
+
+        $("tqCorrect").textContent = correct;
+        $("tqIncorrect").textContent = incorrect;
+        $("tqAccuracy").textContent = `${accuracy}%`;
+        $("tqResultMessage").textContent =
+            `You answered ${questions.length} questions. Accuracy: ${accuracy}%.`;
+
+        hide("tqQuiz");
+        show("tqResults");
+    });
+
+    $("tqQuit").addEventListener("click", () => {
+        hide("tqQuiz");
+        show("tqSetup");
+    });
+
+    $("tqRetry").addEventListener("click", () => {
+        hide("tqResults");
+        show("tqSetup");
+    });
+})();
+</script>
+{% endblock %}

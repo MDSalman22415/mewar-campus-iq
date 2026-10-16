@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Continue Reading | Mewar Campus IQ</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .reader-page {
+            max-width: 1000px;
+            margin: 32px auto;
+            padding: 24px;
+        }
+
+        .reader-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 22px;
+        }
+
+        .reader-content {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            line-height: 1.85;
+            color: #334155;
+            font-size: 15px;
+        }
+
+        .reader-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .reader-actions a {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 9px;
+            background: #4f46e5;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .reader-actions a.secondary {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .reader-meta {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .reader-page { padding: 16px; }
+            .reader-card { padding: 18px; }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="reader-page">
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+
+        <section class="reader-card">
+            <p class="reader-meta">MEWAR CAMPUS IQ · STUDY LIBRARY</p>
+
+            <h1>{{ document["filename"] }}</h1>
+
+            <p class="reader-meta">
+                File type: {{ document["extension"]|upper }}
+            </p>
+
+            <div class="reader-actions">
+                <a href="{{ url_for('topic_quiz') }}">Create Topic Quiz</a>
+                <a class="secondary"
+                   href="{{ url_for('coverage_page') }}">
+                    Coverage Analysis
+                </a>
+            </div>
+        </section>
+
+        <section class="reader-card">
+            <h2>Study Material</h2>
+
+            {% if document["extracted_text"] %}
+                <div class="reader-content">{{ document["extracted_text"] }}</div>
+            {% else %}
+                <p>This document has no readable extracted text.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

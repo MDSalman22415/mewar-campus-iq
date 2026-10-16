@@ -16,6 +16,10 @@
             align-items: center;
             gap: 12px;
             min-width: 0;
+            padding: 8px 14px;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #eff6ff, #f5f3ff);
         }
 
         .profile-info {
@@ -26,31 +30,29 @@
         }
 
         .profile-info strong {
+            color: #1e3a8a;
             font-size: 14px;
+            font-weight: 700;
             overflow-wrap: anywhere;
         }
 
         .profile-info small {
+            color: #64748b;
             font-size: 12px;
             overflow-wrap: anywhere;
-            color: #64748b;
         }
 
         .profile .avatar {
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 42px;
+            height: 42px;
             flex-shrink: 0;
-        }
-
-        .logout-form {
-            margin: 0;
-            flex-shrink: 0;
-        }
-
-        .logout-button {
-            cursor: pointer;
-            font: inherit;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            font-weight: 800;
         }
 
         .auth-buttons {
@@ -59,14 +61,127 @@
             gap: 8px;
         }
 
+        .sidebar-logout-form {
+            margin: 14px 16px 18px;
+        }
+
+        .sidebar-logout-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #fee2e2;
+            border-radius: 12px;
+            background: #fff5f5;
+            color: #b91c1c;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .sidebar-logout-button:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        /* Recent study materials */
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .document-list > .library-icon {
+            display: none;
+        }
+
+        .document-list > h3 {
+            margin: 0 0 6px;
+        }
+
+        .document-item {
+            display: grid;
+            grid-template-columns: 38px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding: 13px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .document-item:hover {
+            border-color: #bfdbfe;
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.06);
+        }
+
+        .document-item .file-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #eff6ff;
+            font-size: 20px;
+        }
+
+        .document-item .file-name {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .document-item .file-meta {
+            color: #64748b;
+            font-size: 11px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .document-list > .upload-more {
+            align-self: flex-start;
+            margin-top: 8px;
+        }
+
+        /* Ask Campus AI: clickable, without changing its position */
+        .navigation a.ai-nav {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
             .profile {
-                flex-wrap: wrap;
                 gap: 8px;
+                max-width: 100%;
             }
 
             .profile-info {
                 max-width: 180px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .document-item {
+                grid-template-columns: 38px minmax(0, 1fr);
+                gap: 10px;
+            }
+
+            .document-item .file-meta {
+                grid-column: 2;
+                text-align: left;
+                white-space: normal;
             }
         }
     </style>
@@ -93,14 +208,40 @@
                 <span>☁</span> Upload & Analyze
             </a>
 
-            <div class="nav-item"><span>▤</span> Coverage Analysis</div>
-            <div class="nav-item"><span>☷</span> Topic Quiz</div>
+            <a class="nav-item" href="{{ url_for('coverage_page') }}">
+                <span>▤</span> Coverage Analysis
+            </a>
+
+            <a class="nav-item" href="{{ url_for('topic_quiz') }}">
+                <span>☷</span> Topic Quiz
+            </a>
+
             <div class="nav-item"><span>▦</span> Revision Planner</div>
-            <div class="nav-item ai-nav"><span>✦</span> Ask Campus AI</div>
+
+            <!-- Only change: Ask Campus AI now opens its own page -->
+            <a class="nav-item ai-nav" href="{{ url_for('campus_ai') }}">
+                <span>✦</span> Ask Campus AI
+            </a>
+
             <div class="nav-item"><span>◴</span> Study Timer</div>
-            <div class="nav-item"><span>▱</span> My Library</div>
+
+            <a class="nav-item" href="{{ url_for('upload_page') }}">
+                <span>▱</span> My Library
+            </a>
+
             <div class="nav-item"><span>⚙</span> Settings</div>
         </nav>
+
+        {% if session.get("user_id") %}
+        <form method="POST"
+              action="{{ url_for('logout') }}"
+              class="sidebar-logout-form">
+            <button type="submit" class="sidebar-logout-button">
+                <span>↪</span>
+                <span>Logout</span>
+            </button>
+        </form>
+        {% endif %}
 
         <div class="sidebar-footer">
             <div class="campus-drawing">🏛️</div>
@@ -130,46 +271,22 @@
                 <kbd>Ctrl + K</kbd>
             </div>
 
-            <!-- Logged-in user profile -->
             {% if session.get("user_id") %}
             <div class="profile">
-                <span class="bell">♧</span>
-
-                <div class="avatar" title="{{ session.get('user_name') or 'Student' }}">
+                <div class="avatar"
+                     title="{{ session.get('user_name') or 'Student' }}">
                     {{ (session.get("user_name") or "S")[0]|upper }}
                 </div>
 
                 <div class="profile-info">
-                    <strong>
-                        Welcome, {{ session.get("user_name") or "Student" }}
-                    </strong>
-
-                    <small>
-                        {{ session.get("user_email") or "Email not available" }}
-                    </small>
+                    <strong>{{ session.get("user_name") or "Student" }}</strong>
+                    <small>{{ session.get("user_email") or "Email not available" }}</small>
                 </div>
-
-                <form
-                    method="POST"
-                    action="{{ url_for('logout') }}"
-                    class="logout-form"
-                >
-                    <button
-                        type="submit"
-                        class="btn btn-outline logout-button"
-                    >
-                        Logout
-                    </button>
-                </form>
             </div>
             {% else %}
             <div class="auth-buttons">
-                <a href="{{ url_for('signup') }}" class="btn btn-primary">
-                    Sign Up
-                </a>
-                <a href="{{ url_for('login') }}" class="btn btn-outline">
-                    Login
-                </a>
+                <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
             </div>
             {% endif %}
         </header>
@@ -216,61 +333,90 @@
             </div>
 
             <div class="quick-grid">
-                <div class="quick-card blue">
+                <a href="#study-library" class="quick-card blue">
                     <div class="card-icon">▤</div>
                     <div>
                         <h3>Continue Reading</h3>
                         <p>Pick up where you left off with your study material.</p>
                     </div>
-                </div>
+                </a>
 
-                <div class="quick-card purple">
+                <a href="{{ url_for('topic_quiz') }}" class="quick-card purple">
                     <div class="card-icon">☷</div>
                     <div>
                         <h3>Topic Quiz</h3>
                         <p>Test your knowledge with AI-powered quizzes.</p>
                     </div>
-                </div>
+                </a>
 
-                <div class="quick-card green">
+                <a href="{{ url_for('coverage_page') }}" class="quick-card green">
                     <div class="card-icon">▣</div>
                     <div>
                         <h3>Coverage Analysis</h3>
                         <p>See what's covered, missing and needs attention.</p>
                     </div>
-                </div>
+                </a>
 
-                <div class="quick-card orange">
+                <a href="#study-library" class="quick-card orange">
                     <div class="card-icon">◷</div>
                     <div>
                         <h3>Focus Session</h3>
                         <p>Stay consistent with your study routine.</p>
                     </div>
-                </div>
+                </a>
             </div>
         </section>
 
         <div class="dashboard-columns">
 
-            <section class="panel">
+            <section class="panel" id="study-library">
                 <div class="panel-heading">
                     <div>
                         <h2>▤ &nbsp; Pick up where you left off</h2>
-                        <p>Your study materials will appear here.</p>
+                        <p>
+                            {% if document_count %}
+                                You have {{ document_count }} study material{{ '' if document_count == 1 else 's' }} in your library.
+                            {% else %}
+                                Your study materials will appear here.
+                            {% endif %}
+                        </p>
                     </div>
 
                     <a href="{{ url_for('upload_page') }}">Upload files →</a>
                 </div>
 
-                <div class="empty-files">
-                    <span>📂</span>
-                    <h3>Your study library</h3>
-                    <p>Upload a PDF, document, or image to get started.</p>
+                {% if recent_documents %}
+                    <div class="document-list">
+                        <span class="library-icon">📂</span>
+                        <h3>Your recent study materials</h3>
 
-                    <a href="{{ url_for('upload_page') }}" class="btn btn-primary">
-                        Upload study material
-                    </a>
-                </div>
+                        {% for document in recent_documents %}
+                            <div class="document-item">
+                                <span class="file-icon">📄</span>
+                                <strong class="file-name">{{ document['filename'] }}</strong>
+                                <small class="file-meta">
+                                    {{ document['extension']|upper }}
+                                    · {{ document['uploaded_at'].strftime('%d %b %Y') if document['uploaded_at'] else '' }}
+                                </small>
+                            </div>
+                        {% endfor %}
+
+                        <a href="{{ url_for('upload_page') }}"
+                           class="btn btn-primary upload-more">
+                            Upload more study material
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="empty-files">
+                        <span>📂</span>
+                        <h3>Your study library</h3>
+                        <p>Upload a PDF, document, or image to get started.</p>
+
+                        <a href="{{ url_for('upload_page') }}" class="btn btn-primary">
+                            Upload study material
+                        </a>
+                    </div>
+                {% endif %}
             </section>
 
             <section class="panel">
@@ -336,7 +482,9 @@ const dashboardSearch = document.getElementById("dashboardSearch");
 
 dashboardSearch.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && this.value.trim()) {
-        window.location.href = "{{ url_for('upload_page') }}";
+        const query = this.value.trim();
+        window.location.href =
+            "{{ url_for('upload_page') }}" + "?search=" + encodeURIComponent(query);
     }
 });
 

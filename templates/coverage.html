@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f7fb">
+
+    <title>Coverage Analysis | Mewar Campus IQ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/coverage.css', v=4) }}">
+
+    <style>
+        /* Keep the coverage heading and user profile on the same top row */
+        .coverage-page > .coverage-header {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            flex-wrap: nowrap !important;
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .coverage-page > .coverage-header > div:first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .coverage-page > .coverage-header .coverage-user {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            flex: 0 0 auto;
+            width: auto;
+            max-width: 300px;
+            min-width: 0;
+            margin: 0 0 0 auto !important;
+            padding: 9px 13px;
+            border: 1px solid #dbeafe;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+            box-sizing: border-box;
+            align-self: flex-start !important;
+        }
+
+        .coverage-user .user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .coverage-user .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .coverage-user .user-details strong {
+            color: #1e3a8a;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .coverage-user .user-details small {
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        /* Logout stays below sidebar navigation */
+        .sidebar-logout-form {
+            margin: 14px 16px 18px;
+        }
+
+        .sidebar-logout-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #fee2e2;
+            border-radius: 12px;
+            background: #fff5f5;
+            color: #b91c1c;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .sidebar-logout-button:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        @media (max-width: 600px) {
+            .coverage-page > .coverage-header {
+                flex-direction: row !important;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            .coverage-page > .coverage-header > div:first-child {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .coverage-page > .coverage-header .coverage-user {
+                flex: 0 1 auto;
+                max-width: 55%;
+                padding: 7px 9px;
+                gap: 7px;
+            }
+
+            .coverage-user .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+
+            .coverage-user .user-details strong {
+                font-size: 12px;
+            }
+
+            .coverage-user .user-details small {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+
+        <a href="{{ url_for('dashboard') }}" class="brand">
+            <span class="brand-icon">🎓</span>
+            <span>
+                <strong>Mewar Campus IQ</strong>
+                <small>AI-Powered Study Companion</small>
+            </span>
+        </a>
+
+        <nav class="navigation">
+            <a class="nav-item" href="{{ url_for('dashboard') }}">
+                <span>⌂</span> Home
+            </a>
+
+            <a class="nav-item" href="{{ url_for('upload_page') }}">
+                <span>⇧</span> Upload &amp; Analyze
+            </a>
+
+            <a class="nav-item active" href="{{ url_for('coverage_page') }}">
+                <span>▤</span> Coverage Analysis
+            </a>
+
+            <div class="nav-item"><span>☷</span> Topic Quiz</div>
+            <div class="nav-item"><span>▦</span> Revision Planner</div>
+            <div class="nav-item ai-nav"><span>✦</span> Ask Campus AI</div>
+            <div class="nav-item"><span>◴</span> Study Timer</div>
+            <div class="nav-item"><span>◱</span> My Library</div>
+            <div class="nav-item"><span>⚙</span> Settings</div>
+        </nav>
+
+        {% if session.get("user_id") %}
+        <form method="POST"
+              action="{{ url_for('logout') }}"
+              class="sidebar-logout-form">
+            <button type="submit" class="sidebar-logout-button">
+                <span>↪</span>
+                <span>Logout</span>
+            </button>
+        </form>
+        {% endif %}
+
+        <div class="sidebar-footer">
+            <div class="campus-drawing">🏫</div>
+
+            <p>Smarter Learning<br>Brighter Future</p>
+
+            <div class="university">
+                <span>🎓</span>
+                <div>
+                    <strong>Mewar University</strong>
+                    <small>Learn · Grow · Achieve</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="coverage-page" id="coverageApp">
+
+            <header class="coverage-header">
+                <div>
+                    <p class="eyebrow">MEWAR CAMPUS IQ</p>
+                    <h1>Coverage Analysis</h1>
+                    <p class="muted">
+                        Review syllabus-topic matches across all your uploaded study files.
+                    </p>
+                </div>
+
+                {% if session.get("user_id") %}
+                {% set display_name = session.get("user_name") or session.get("name") or (session.get("user_email", "").split("@")[0] if session.get("user_email") else "Student") %}
+                {% set display_email = session.get("user_email") or session.get("email") or "" %}
+
+                <div class="coverage-user">
+                    <div class="user-avatar">
+                        {{ display_name[0]|upper if display_name else "S" }}
+                    </div>
+
+                    <div class="user-details">
+                        <strong>{{ display_name }}</strong>
+                        <small>{{ display_email or "Email not available" }}</small>
+                    </div>
+                </div>
+                {% endif %}
+            </header>
+
+            <section class="panel controls-panel">
+                <div>
+                    <h2>All uploaded study material</h2>
+                    <p class="muted">
+                        Analysis loads automatically for files belonging to your account.
+                    </p>
+                </div>
+
+                <button id="refreshCoverage" class="primary-btn" type="button">
+                    ↻ Refresh analysis
+                </button>
+            </section>
+
+            <div id="coverageMessage"
+                 class="message"
+                 role="status"
+                 aria-live="polite">
+                Loading your uploaded files...
+            </div>
+
+            <section class="overview-heading">
+                <div>
+                    <h2>Combined overview</h2>
+                    <p class="muted">
+                        Results across every uploaded file, calculated per file and topic.
+                    </p>
+                </div>
+                <span id="totalFilesLabel" class="file-count">0 files</span>
+            </section>
+
+            <section class="metrics-grid">
+                <article class="metric-card coverage-metric">
+                    <span>Overall content coverage</span>
+                    <strong id="coveragePercent">—</strong>
+                    <div class="progress-track">
+                        <div id="coverageProgress" class="progress-fill"></div>
+                    </div>
+                    <small>Based on keyword matches, not confirmed reading progress.</small>
+                </article>
+
+                <article class="metric-card">
+                    <span>Topics found</span>
+                    <strong id="foundCount">—</strong>
+                    <small>Three or more matched keywords</small>
+                </article>
+
+                <article class="metric-card">
+                    <span>Partially matched</span>
+                    <strong id="partialCount">—</strong>
+                    <small>One or two matched keywords</small>
+                </article>
+
+                <article class="metric-card">
+                    <span>Not found</span>
+                    <strong id="missingCount">—</strong>
+                    <small>No matched keywords in the file text</small>
+                </article>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <h2>File-wise coverage</h2>
+                        <p class="muted">
+                            Each uploaded document has its own coverage result.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="pdfCoverageGrid" class="file-coverage-grid">
+                    <div class="empty-state">Loading file-wise results...</div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <h2>Topic-wise results</h2>
+                        <p class="muted">
+                            Each row identifies the file in which the topic was checked.
+                        </p>
+                    </div>
+
+                    <button id="exportCoverage"
+                            class="secondary-btn"
+                            type="button"
+                            disabled>
+                        Export CSV
+                    </button>
+                </div>
+
+                <div class="table-filters">
+                    <input id="topicSearch"
+                           type="search"
+                           placeholder="Search topic, keyword or filename..."
+                           aria-label="Search topic, keyword or filename">
+
+                    <select id="statusFilter" aria-label="Filter by status">
+                        <option value="all">All statuses</option>
+                        <option value="Found">Found</option>
+                        <option value="Partial">Partial</option>
+                        <option value="Not Found">Not found</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Source file</th>
+                                <th>Status</th>
+                                <th>Matched keywords</th>
+                                <th>Evidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coverageTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-cell">
+                                    Loading analysis...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="tableCount" class="table-count"></p>
+            </section>
+
+            <section class="panel recommendations-panel">
+                <div class="section-heading">
+                    <div>
+                        <h2>Recommended study priorities</h2>
+                        <p class="muted">
+                            Topics with partial or no keyword matches, grouped by source file.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="recommendationList">
+                    <p class="muted">Recommendations will appear after analysis.</p>
+                </div>
+            </section>
+
+            <p class="coverage-disclaimer">
+                <strong>How to read these results:</strong>
+                this tool compares extracted document text with predefined topic keywords.
+                “Not found” means no configured keywords matched; it does not necessarily
+                mean the topic is absent. These results do not measure how much you have
+                personally studied.
+            </p>
+        </div>
+
+        <div id="evidenceModal" class="modal" hidden>
+            <div class="modal-content"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="evidenceTitle">
+
+                <button id="closeEvidence"
+                        class="modal-close"
+                        type="button"
+                        aria-label="Close evidence">
+                    ×
+                </button>
+
+                <h2 id="evidenceTitle">Topic evidence</h2>
+                <p id="evidenceTopic" class="muted"></p>
+
+                <h3>Extracted text snippet</h3>
+                <pre id="evidenceSnippet"></pre>
+
+                <p><strong>Matched keywords:</strong></p>
+                <div id="evidenceKeywords" class="keyword-list"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/coverage.js', v=4) }}"
+        defer></script>
+</body>
+</html>
